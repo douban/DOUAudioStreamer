@@ -195,6 +195,11 @@ static void *kDurationKVOKey = &kDurationKVOKey;
   [self _resetStreamer];
 }
 
+- (IBAction)actionStop:(id)sender
+{
+  [_streamer stop];
+}
+
 - (IBAction)actionSliderVolume:(id)sender
 {
   [DOUAudioStreamer setVolume:[_sliderVolume value]];

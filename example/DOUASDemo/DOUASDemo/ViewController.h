@@ -20,6 +20,7 @@
 
 @property (nonatomic, strong) IBOutlet UIButton *buttonPlayPause;
 @property (nonatomic, strong) IBOutlet UIButton *buttonNext;
+@property (nonatomic, strong) IBOutlet UIButton *buttonStop;
 
 @property (nonatomic, strong) IBOutlet UILabel *labelTitle;
 @property (nonatomic, strong) IBOutlet UILabel *labelInfo;
@@ -30,6 +31,7 @@
 
 - (IBAction)actionPlayPause:(id)sender;
 - (IBAction)actionNext:(id)sender;
+- (IBAction)actionStop:(id)sender;
 - (IBAction)actionSliderVolume:(id)sender;
 
 @end
