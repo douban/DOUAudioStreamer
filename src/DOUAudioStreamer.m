@@ -178,4 +178,20 @@ NSString *const kDOUAudioStreamerErrorDomain = @"com.douban.audio-streamer.error
   }
 }
 
+- (void)stop
+{
+  @synchronized(self) {
+    if (_status == DOUAudioStreamerPaused) {
+      return;
+    }
+
+    if ([[DOUAudioEventLoop sharedEventLoop] currentStreamer] != self) {
+      return;
+    }
+
+    [[DOUAudioEventLoop sharedEventLoop] pause];
+    [[DOUAudioEventLoop sharedEventLoop] setCurrentStreamer:nil];
+  }
+}
+
 @end

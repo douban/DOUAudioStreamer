@@ -66,5 +66,6 @@ typedef NS_ENUM(NSInteger, DOUAudioStreamerErrorCode) {
 
 - (void)play;
 - (void)pause;
+- (void)stop;
 
 @end
