@@ -76,13 +76,6 @@ NSString *const kDOUAudioStreamerErrorDomain = @"com.douban.audio-streamer.error
   return self;
 }
 
-- (void)dealloc
-{
-  if (_fileProvider.cachedPath) {
-    [[NSFileManager defaultManager] removeItemAtPath:_fileProvider.cachedPath error:NULL];
-  }
-}
-
 + (double)volume
 {
   return [[DOUAudioEventLoop sharedEventLoop] volume];
