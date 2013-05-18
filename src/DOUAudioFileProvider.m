@@ -114,6 +114,7 @@
 
     [_request cancel];
   }
+  [[NSFileManager defaultManager] removeItemAtPath:self.cachedPath error:NULL];
 }
 
 + (NSString *)_sha256ForAudioFileURL:(NSURL *)audioFileURL
