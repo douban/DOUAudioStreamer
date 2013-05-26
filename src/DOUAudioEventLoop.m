@@ -26,6 +26,7 @@
 #include <sys/event.h>
 #include <sys/time.h>
 #include <pthread.h>
+#include <sched.h>
 
 static const NSUInteger kBufferTime = 200;
 static NSString *const kVolumeKey = @"DOUAudioStreamerVolume";
@@ -427,7 +428,18 @@ static void *event_loop_main(void *info)
 
 - (void)_createThread
 {
-  pthread_create(&_thread, NULL, event_loop_main, (__bridge void *)self);
+  pthread_attr_t attr;
+  struct sched_param sched_param;
+  int sched_policy = SCHED_FIFO;
+
+  pthread_attr_init(&attr);
+  pthread_attr_setschedpolicy(&attr, sched_policy);
+  sched_param.sched_priority = sched_get_priority_max(sched_policy);
+  pthread_attr_setschedparam(&attr, &sched_param);
+
+  pthread_create(&_thread, &attr, event_loop_main, (__bridge void *)self);
+
+  pthread_attr_destroy(&attr);
 }
 
 - (void)setCurrentStreamer:(DOUAudioStreamer *)currentStreamer
