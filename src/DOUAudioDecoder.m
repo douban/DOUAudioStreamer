@@ -344,12 +344,25 @@ static OSStatus decoder_data_proc(AudioConverterRef inAudioConverter, UInt32 *io
   }
   if (![provider isFinished]) {
     NSUInteger dataOffset = [_playbackItem dataOffset];
+    NSUInteger expectedDataLength = [provider expectedLength];
     NSInteger receivedDataLength  = (NSInteger)[provider receivedLength] - dataOffset;
 
     SInt64 packetNumber = _decodingContext.afio.pos + _decodingContext.afio.numPacketsPerRead;
     SInt64 packetDataOffset = packetNumber * _decodingContext.afio.srcSizePerPacket;
 
-    if (receivedDataLength < packetDataOffset) {
+    SInt64 bytesPerPacket = _decodingContext.afio.srcSizePerPacket;
+    SInt64 bytesPerRead = bytesPerPacket * _decodingContext.afio.numPacketsPerRead;
+
+    SInt64 framesPerPacket = _decodingContext.inputFormat.mFramesPerPacket;
+    double intervalPerPacket = 1000.0 / _decodingContext.inputFormat.mSampleRate * framesPerPacket;
+    double intervalPerRead = intervalPerPacket / bytesPerPacket * bytesPerRead;
+
+    double downloadTime = 1000.0 * bytesPerRead / [provider downloadSpeed];
+    SInt64 bytesRemaining = expectedDataLength - receivedDataLength;
+
+    if (receivedDataLength < packetDataOffset ||
+        (bytesRemaining > 0 &&
+        downloadTime > intervalPerRead)) {
       pthread_mutex_unlock(&_decodingContext.mutex);
       return DOUAudioDecoderWaiting;
     }
