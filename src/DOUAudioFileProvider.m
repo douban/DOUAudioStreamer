@@ -73,7 +73,7 @@
 
 - (NSUInteger)downloadSpeed
 {
-  return 0;
+  return _receivedLength;
 }
 
 - (BOOL)isReady
