@@ -2,7 +2,7 @@
 /*
  *  DOUAudioStreamer - A Core Audio based streaming audio player for iOS/Mac:
  *
- *      http://github.com/douban/DOUAudioStreamer
+ *      https://github.com/douban/DOUAudioStreamer
  *
  *  Copyright 2013 Douban Inc.  All rights reserved.
  *
