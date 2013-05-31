@@ -19,6 +19,16 @@
 #import "NSData+DOUMappedFile.h"
 #include <CommonCrypto/CommonDigest.h>
 
+static const NSUInteger kID3HeaderSize = 10;
+static const NSUInteger kDefaultHeaderFormatThreshold = 4096 * 4;
+
+typedef NS_ENUM(NSUInteger, DOUAudioRemoteFileHeaderFormat) {
+  DOUAudioRemoteFileUnknownHeaderFormat,
+  DOUAudioRemoteFileDefaultHeaderFormat,
+  DOUAudioRemoteFileID3v2HeaderFormat,
+  DOUAudioRemoteFileID3v3HeaderFormat
+};
+
 @interface DOUAudioFileProvider () {
 @protected
   id <DOUAudioFile> _audioFile;
@@ -42,6 +52,10 @@
 @private
   DOUSimpleHTTPRequest *_request;
   NSURL *_audioFileURL;
+
+  DOUAudioRemoteFileHeaderFormat _headerFormat;
+  uint8_t _id3Header[kID3HeaderSize];
+  uint32_t _id3BodySize;
 }
 @end
 
@@ -97,6 +111,7 @@
   self = [super _initWithAudioFile:audioFile];
   if (self) {
     _audioFileURL = [audioFile audioFileURL];
+    _headerFormat = DOUAudioRemoteFileUnknownHeaderFormat;
     [self _createRequest];
     [_request start];
   }
@@ -215,19 +230,90 @@
   return [_request downloadSpeed];
 }
 
-- (BOOL)isReady
+- (BOOL)_checkReadyWithThreshold:(NSUInteger)threshold
 {
-  static const NSUInteger threshold = 4096 * 4;
-
-  if (_expectedLength > 0) {
-    if (_expectedLength <= threshold) {
-      if (_receivedLength > _expectedLength) {
-        return YES;
-      }
-    }
-    else if (_receivedLength > threshold) {
+  if (_expectedLength <= threshold) {
+    if (_receivedLength > _expectedLength) {
       return YES;
     }
+  }
+  else if (_receivedLength > threshold) {
+    return YES;
+  }
+
+  return NO;
+}
+
+- (BOOL)_checkReadyDefault
+{
+  return [self _checkReadyWithThreshold:kDefaultHeaderFormatThreshold];
+}
+
+- (BOOL)_checkReadyID3v2
+{
+  return [self _checkReadyWithThreshold:MAX(kID3HeaderSize + _id3BodySize,
+                                            kDefaultHeaderFormatThreshold)];
+}
+
+- (BOOL)_checkReadyID3v3
+{
+  return [self _checkReadyWithThreshold:MAX(kID3HeaderSize + _id3BodySize,
+                                            kDefaultHeaderFormatThreshold)];
+}
+
+- (BOOL)_checkReady
+{
+  switch (_headerFormat) {
+  case DOUAudioRemoteFileDefaultHeaderFormat:
+    return [self _checkReadyDefault];
+
+  case DOUAudioRemoteFileID3v2HeaderFormat:
+    return [self _checkReadyID3v2];
+
+  case DOUAudioRemoteFileID3v3HeaderFormat:
+    return [self _checkReadyID3v3];
+
+  case DOUAudioRemoteFileUnknownHeaderFormat:
+  default:
+    break;
+  }
+
+  if (_expectedLength < kID3HeaderSize) {
+    if (_receivedLength > _expectedLength) {
+      return YES;
+    }
+  }
+  else if (_receivedLength >= kID3HeaderSize) {
+    const uint8_t *bytes = (const uint8_t *)[_mappedData bytes];
+
+    if (strncmp((const char *)bytes, "ID3", 3) == 0) {
+      memcpy(_id3Header, bytes, kID3HeaderSize);
+      _id3BodySize = (uint32_t)_id3Header[6] << 21 |
+                     (uint32_t)_id3Header[7] << 14 |
+                     (uint32_t)_id3Header[8] <<  7 |
+                     (uint32_t)_id3Header[9];
+
+      if (_id3Header[3] == 0x03 && _id3Header[4] == 0x00) {
+        _headerFormat = DOUAudioRemoteFileID3v2HeaderFormat;
+        return [self _checkReadyID3v2];
+      }
+      else if (_id3Header[3] == 0x04 && _id3Header[4] == 0x00) {
+        _headerFormat = DOUAudioRemoteFileID3v3HeaderFormat;
+        return [self _checkReadyID3v3];
+      }
+    }
+
+    _headerFormat = DOUAudioRemoteFileDefaultHeaderFormat;
+    return [self _checkReadyDefault];
+  }
+
+  return NO;
+}
+
+- (BOOL)isReady
+{
+  if (_expectedLength > 0) {
+    return [self _checkReady];
   }
 
   return NO;
