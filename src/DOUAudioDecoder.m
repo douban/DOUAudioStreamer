@@ -357,7 +357,7 @@ static OSStatus decoder_data_proc(AudioConverterRef inAudioConverter, UInt32 *io
     double intervalPerPacket = 1000.0 / _decodingContext.inputFormat.mSampleRate * framesPerPacket;
     double intervalPerRead = intervalPerPacket / bytesPerPacket * bytesPerRead;
 
-    double downloadTime = 1000.0 * bytesPerRead / [provider downloadSpeed];
+    double downloadTime = 1000.0 * (bytesPerRead - (receivedDataLength - packetDataOffset)) / [provider downloadSpeed];
     SInt64 bytesRemaining = expectedDataLength - receivedDataLength;
 
     if (receivedDataLength < packetDataOffset ||
