@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="2.0" toolsVersion="3084" systemVersion="12D78" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="2">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="2.0" toolsVersion="3084" systemVersion="12E55" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="2">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="2083"/>
     </dependencies>
@@ -54,7 +54,6 @@
                                 <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <progressView opaque="NO" contentMode="scaleToFill" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="grv-Pv-5dh"/>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MRh-yI-MU3">
                                 <constraints>
                                     <constraint firstAttribute="height" constant="21" id="pvu-PO-5oQ"/>
@@ -92,30 +91,35 @@
                                     <action selector="actionStop:" destination="2" eventType="touchUpInside" id="4kU-Fy-dTu"/>
                                 </connections>
                             </button>
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="CL6-Xn-GxW">
+                                <connections>
+                                    <action selector="actionSliderProgress:" destination="2" eventType="valueChanged" id="QeC-nG-T6h"/>
+                                </connections>
+                            </slider>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstAttribute="trailing" secondItem="CL6-Xn-GxW" secondAttribute="trailing" constant="20" symbolic="YES" type="default" id="4ES-so-FTq"/>
                             <constraint firstItem="MRh-yI-MU3" firstAttribute="top" secondItem="3" secondAttribute="top" constant="115" id="5jJ-e1-1Fk"/>
                             <constraint firstItem="MRh-yI-MU3" firstAttribute="leading" secondItem="3" secondAttribute="leading" constant="20" symbolic="YES" type="default" id="70P-RX-3cD"/>
                             <constraint firstItem="Hvy-yc-iLz" firstAttribute="top" secondItem="3" secondAttribute="top" constant="20" symbolic="YES" type="default" id="A89-4T-p7h"/>
-                            <constraint firstItem="grv-Pv-5dh" firstAttribute="top" secondItem="rf6-yG-QJY" secondAttribute="bottom" constant="8" symbolic="YES" type="default" id="Bay-Md-BB2"/>
                             <constraint firstAttribute="trailing" secondItem="twI-R7-SFC" secondAttribute="trailing" constant="20" symbolic="YES" type="default" id="Cdc-Sp-DQW"/>
                             <constraint firstAttribute="trailing" secondItem="jEi-JZ-izt" secondAttribute="trailing" constant="77" id="Hrd-xI-puk"/>
                             <constraint firstItem="RFU-BF-yv6" firstAttribute="top" secondItem="YV4-4b-mPQ" secondAttribute="top" type="default" id="MAd-Vm-mbY"/>
-                            <constraint firstItem="kNd-ol-SwI" firstAttribute="top" secondItem="3" secondAttribute="top" constant="166" id="P0Z-XI-1z8"/>
+                            <constraint firstItem="CL6-Xn-GxW" firstAttribute="centerX" secondItem="rf6-yG-QJY" secondAttribute="centerX" type="default" id="Oh6-Lu-Eua"/>
                             <constraint firstItem="YV4-4b-mPQ" firstAttribute="leading" secondItem="3" secondAttribute="leading" constant="103" id="Qln-f5-O9u"/>
-                            <constraint firstItem="rf6-yG-QJY" firstAttribute="top" secondItem="kNd-ol-SwI" secondAttribute="bottom" constant="8" symbolic="YES" type="default" id="W7H-FC-BwI"/>
                             <constraint firstAttribute="trailing" secondItem="MRh-yI-MU3" secondAttribute="trailing" constant="20" symbolic="YES" type="default" id="WKY-Tu-c7I"/>
                             <constraint firstItem="twI-R7-SFC" firstAttribute="top" secondItem="3" secondAttribute="top" constant="73" id="Z1B-Gi-URm"/>
                             <constraint firstItem="Hvy-yc-iLz" firstAttribute="leading" secondItem="3" secondAttribute="leading" constant="20" symbolic="YES" type="default" id="a2R-LU-HN6"/>
                             <constraint firstItem="RFU-BF-yv6" firstAttribute="leading" secondItem="3" secondAttribute="leading" constant="20" symbolic="YES" type="default" id="aEO-r5-0Yb"/>
-                            <constraint firstItem="rf6-yG-QJY" firstAttribute="centerX" secondItem="grv-Pv-5dh" secondAttribute="centerX" type="default" id="aHk-cD-9Hz"/>
+                            <constraint firstItem="CL6-Xn-GxW" firstAttribute="leading" secondItem="3" secondAttribute="leading" constant="20" symbolic="YES" type="default" id="afH-7J-gac"/>
                             <constraint firstItem="twI-R7-SFC" firstAttribute="leading" secondItem="3" secondAttribute="leading" constant="20" symbolic="YES" type="default" id="b7A-Fq-x2i"/>
                             <constraint firstAttribute="trailing" secondItem="Hvy-yc-iLz" secondAttribute="trailing" constant="20" symbolic="YES" type="default" id="g17-To-4cs"/>
-                            <constraint firstAttribute="trailing" secondItem="grv-Pv-5dh" secondAttribute="trailing" constant="20" symbolic="YES" type="default" id="jI0-2d-dCO"/>
+                            <constraint firstItem="jEi-JZ-izt" firstAttribute="top" secondItem="3" secondAttribute="top" constant="166" id="nNl-WG-h6e"/>
+                            <constraint firstItem="CL6-Xn-GxW" firstAttribute="top" secondItem="rf6-yG-QJY" secondAttribute="bottom" constant="8" symbolic="YES" type="default" id="qd2-Cm-R9Y"/>
                             <constraint firstItem="kNd-ol-SwI" firstAttribute="leading" secondItem="3" secondAttribute="leading" constant="71" id="tL6-Ey-Fdv"/>
-                            <constraint firstItem="grv-Pv-5dh" firstAttribute="leading" secondItem="3" secondAttribute="leading" constant="20" symbolic="YES" type="default" id="uuU-iC-fyK"/>
                             <constraint firstItem="kNd-ol-SwI" firstAttribute="baseline" secondItem="jEi-JZ-izt" secondAttribute="baseline" type="default" id="vJl-ji-Uw6"/>
+                            <constraint firstItem="rf6-yG-QJY" firstAttribute="top" secondItem="jEi-JZ-izt" secondAttribute="bottom" constant="8" symbolic="YES" type="default" id="vcU-N7-vlS"/>
                             <constraint firstAttribute="bottom" secondItem="YV4-4b-mPQ" secondAttribute="bottom" constant="203" id="xY6-Gq-Cp1"/>
                         </constraints>
                     </view>
@@ -126,7 +130,7 @@
                         <outlet property="labelInfo" destination="twI-R7-SFC" id="zB1-Qq-mD0"/>
                         <outlet property="labelMisc" destination="MRh-yI-MU3" id="ddg-FO-slk"/>
                         <outlet property="labelTitle" destination="Hvy-yc-iLz" id="Z7q-Le-nNE"/>
-                        <outlet property="progressView" destination="grv-Pv-5dh" id="4WU-zQ-04h"/>
+                        <outlet property="sliderProgress" destination="CL6-Xn-GxW" id="UXd-G5-3c1"/>
                         <outlet property="sliderVolume" destination="YV4-4b-mPQ" id="P4v-rM-1vX"/>
                     </connections>
                 </viewController>
@@ -143,6 +147,7 @@
             <relationships>
                 <relationship kind="action" name="actionNext:"/>
                 <relationship kind="action" name="actionPlayPause:"/>
+                <relationship kind="action" name="actionSliderProgress:"/>
                 <relationship kind="action" name="actionSliderVolume:"/>
                 <relationship kind="action" name="actionStop:"/>
                 <relationship kind="outlet" name="buttonNext" candidateClass="UIButton"/>
@@ -151,7 +156,7 @@
                 <relationship kind="outlet" name="labelInfo" candidateClass="UILabel"/>
                 <relationship kind="outlet" name="labelMisc" candidateClass="UILabel"/>
                 <relationship kind="outlet" name="labelTitle" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="progressView" candidateClass="UIProgressView"/>
+                <relationship kind="outlet" name="sliderProgress" candidateClass="UISlider"/>
                 <relationship kind="outlet" name="sliderVolume" candidateClass="UISlider"/>
             </relationships>
         </class>

@@ -102,10 +102,10 @@ static void *kDurationKVOKey = &kDurationKVOKey;
 - (void)_timerAction:(id)timer
 {
   if ([_streamer duration] == 0.0) {
-    [_progressView setProgress:0.0f animated:NO];
+    [_sliderProgress setValue:0.0f animated:NO];
   }
   else {
-    [_progressView setProgress:[_streamer currentTime] / [_streamer duration] animated:YES];
+    [_sliderProgress setValue:[_streamer currentTime] / [_streamer duration] animated:YES];
   }
 
   [_labelMisc setText:[NSString stringWithFormat:@"Received %.2f/%.2f MB, Speed %.2f MB/s", (double)[_streamer receivedLength] / 1024 / 1024, (double)[_streamer expectedLength] / 1024 / 1024, (double)[_streamer downloadSpeed] / 1024 / 1024]];
@@ -198,6 +198,12 @@ static void *kDurationKVOKey = &kDurationKVOKey;
 - (IBAction)actionStop:(id)sender
 {
   [_streamer stop];
+}
+
+- (IBAction)actionSliderProgress:(id)sender
+{
+  [_streamer setCurrentTime:[_streamer duration] * [_sliderProgress value]];
+  [self _timerAction:nil];
 }
 
 - (IBAction)actionSliderVolume:(id)sender

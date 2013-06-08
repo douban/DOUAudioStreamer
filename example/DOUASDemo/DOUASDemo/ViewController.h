@@ -26,12 +26,13 @@
 @property (nonatomic, strong) IBOutlet UILabel *labelInfo;
 @property (nonatomic, strong) IBOutlet UILabel *labelMisc;
 
-@property (nonatomic, strong) IBOutlet UIProgressView *progressView;
+@property (nonatomic, strong) IBOutlet UISlider *sliderProgress;
 @property (nonatomic, strong) IBOutlet UISlider *sliderVolume;
 
 - (IBAction)actionPlayPause:(id)sender;
 - (IBAction)actionNext:(id)sender;
 - (IBAction)actionStop:(id)sender;
+- (IBAction)actionSliderProgress:(id)sender;
 - (IBAction)actionSliderVolume:(id)sender;
 
 @end
