@@ -267,8 +267,9 @@ static void audio_route_change_listener(void *inClientData,
         [*streamer decoder] != nil) {
       NSUInteger milliseconds = MIN((NSUInteger)(uintptr_t)_lastKQUserData,
                                     [[*streamer playbackItem] estimatedDuration]);
+      [*streamer setTimingOffset:(NSInteger)milliseconds - (NSInteger)[_renderer currentTime]];
       [[*streamer decoder] seekToTime:milliseconds];
-      [_renderer flush];
+      [_renderer flushShouldResetTiming:NO];
     }
   }
   else if (event == event_streamer_changed) {
@@ -469,7 +470,7 @@ static void *event_loop_main(void *info)
 
 - (NSTimeInterval)currentTime
 {
-  return (NSTimeInterval)[_renderer currentTime] / 1000.0;
+  return (NSTimeInterval)([[self currentStreamer] timingOffset] + [_renderer currentTime]) / 1000.0;
 }
 
 - (void)setCurrentTime:(NSTimeInterval)currentTime

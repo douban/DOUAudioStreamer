@@ -29,6 +29,7 @@ NSString *const kDOUAudioStreamerErrorDomain = @"com.douban.audio-streamer.error
   NSError *_error;
 
   NSTimeInterval _duration;
+  NSInteger _timingOffset;
 
   DOUAudioFileProvider *_fileProvider;
   DOUAudioPlaybackItem *_playbackItem;
@@ -46,6 +47,7 @@ NSString *const kDOUAudioStreamerErrorDomain = @"com.douban.audio-streamer.error
 @synthesize error = _error;
 
 @synthesize duration = _duration;
+@synthesize timingOffset = _timingOffset;
 
 @synthesize fileProvider = _fileProvider;
 @synthesize playbackItem = _playbackItem;
