@@ -203,7 +203,6 @@ static void *kDurationKVOKey = &kDurationKVOKey;
 - (IBAction)actionSliderProgress:(id)sender
 {
   [_streamer setCurrentTime:[_streamer duration] * [_sliderProgress value]];
-  [self _timerAction:nil];
 }
 
 - (IBAction)actionSliderVolume:(id)sender
