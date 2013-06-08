@@ -431,6 +431,11 @@ static OSStatus property_listener_default_output_device(AudioObjectID inObjectID
 
 - (void)flush
 {
+  [self flushShouldResetTiming:YES];
+}
+
+- (void)flushShouldResetTiming:(BOOL)shouldResetTiming
+{
   if (_outputAudioUnit == NULL) {
     return;
   }
@@ -439,7 +444,9 @@ static OSStatus property_listener_default_output_device(AudioObjectID inObjectID
 
   _firstValidByteOffset = 0;
   _validByteCount = 0;
-  [self _resetTiming];
+  if (shouldResetTiming) {
+    [self _resetTiming];
+  }
 
   pthread_mutex_unlock(&_mutex);
   pthread_cond_signal(&_cond);
