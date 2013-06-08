@@ -34,6 +34,7 @@ static NSString *const kVolumeKey = @"DOUAudioStreamerVolume";
 typedef NS_ENUM(uint64_t, event_type) {
   event_play,
   event_pause,
+  event_seek,
   event_streamer_changed,
   event_provider_events,
   event_finalizing,
@@ -61,6 +62,7 @@ typedef NS_ENUM(uint64_t, event_type) {
   DOUAudioFileProviderEventBlock _fileProviderEventBlock;
 
   int _kq;
+  void *_lastKQUserData;
   pthread_mutex_t _mutex;
   pthread_t _thread;
 }
@@ -200,8 +202,13 @@ static void audio_route_change_listener(void *inClientData,
 
 - (void)_sendEvent:(event_type)event
 {
+  [self _sendEvent:event userData:NULL];
+}
+
+- (void)_sendEvent:(event_type)event userData:(void *)userData
+{
   struct kevent kev;
-  EV_SET(&kev, event, EVFILT_USER, 0, NOTE_TRIGGER, 0, NULL);
+  EV_SET(&kev, event, EVFILT_USER, 0, NOTE_TRIGGER, 0, userData);
   kevent(_kq, &kev, 1, NULL, 0, NULL);
 }
 
@@ -228,6 +235,7 @@ static void audio_route_change_listener(void *inClientData,
       if (kev.filter == EVFILT_USER &&
           kev.ident >= event_first &&
           kev.ident <= event_last) {
+        _lastKQUserData = kev.udata;
         return kev.ident;
       }
     }
@@ -252,6 +260,15 @@ static void audio_route_change_listener(void *inClientData,
         [*streamer status] != DOUAudioStreamerPaused) {
       [_renderer stop];
       [*streamer setStatus:DOUAudioStreamerPaused];
+    }
+  }
+  else if (event == event_seek) {
+    if (*streamer != nil &&
+        [*streamer decoder] != nil) {
+      NSUInteger milliseconds = MIN((NSUInteger)(uintptr_t)_lastKQUserData,
+                                    [[*streamer playbackItem] estimatedDuration]);
+      [[*streamer decoder] seekToTime:milliseconds];
+      [_renderer flush];
     }
   }
   else if (event == event_streamer_changed) {
@@ -453,6 +470,12 @@ static void *event_loop_main(void *info)
 - (NSTimeInterval)currentTime
 {
   return (NSTimeInterval)[_renderer currentTime] / 1000.0;
+}
+
+- (void)setCurrentTime:(NSTimeInterval)currentTime
+{
+  NSUInteger milliseconds = lrint(currentTime * 1000.0);
+  [self _sendEvent:event_seek userData:(void *)(uintptr_t)milliseconds];
 }
 
 - (double)volume

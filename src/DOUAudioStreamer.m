@@ -105,6 +105,15 @@ NSString *const kDOUAudioStreamerErrorDomain = @"com.douban.audio-streamer.error
   return [[DOUAudioEventLoop sharedEventLoop] currentTime];
 }
 
+- (void)setCurrentTime:(NSTimeInterval)currentTime
+{
+  if ([[DOUAudioEventLoop sharedEventLoop] currentStreamer] != self) {
+    return;
+  }
+
+  [[DOUAudioEventLoop sharedEventLoop] setCurrentTime:currentTime];
+}
+
 - (double)volume
 {
   return [[self class] volume];

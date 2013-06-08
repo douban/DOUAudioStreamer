@@ -24,7 +24,7 @@
 
 @property (nonatomic, strong) DOUAudioStreamer *currentStreamer;
 
-@property (nonatomic, readonly) NSTimeInterval currentTime;
+@property (nonatomic, assign) NSTimeInterval currentTime;
 @property (nonatomic, assign) double volume;
 
 - (void)play;

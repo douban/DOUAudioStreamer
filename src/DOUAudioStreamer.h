@@ -54,7 +54,7 @@ typedef NS_ENUM(NSInteger, DOUAudioStreamerErrorCode) {
 @property (nonatomic, readonly) NSURL *url;
 
 @property (nonatomic, assign, readonly) NSTimeInterval duration;
-@property (nonatomic, readonly) NSTimeInterval currentTime;
+@property (nonatomic, assign) NSTimeInterval currentTime;
 @property (nonatomic, assign) double volume;
 
 @property (nonatomic, readonly) NSString *cachedPath;
