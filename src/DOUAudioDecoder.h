@@ -41,6 +41,7 @@ typedef NS_ENUM(NSUInteger, DOUAudioDecoderStatus) {
 - (void)tearDown;
 
 - (DOUAudioDecoderStatus)decodeOnce;
+- (void)seekToTime:(NSUInteger)milliseconds;
 
 @property (nonatomic, readonly) DOUAudioPlaybackItem *playbackItem;
 @property (nonatomic, readonly) DOUAudioLPCM *lpcm;
