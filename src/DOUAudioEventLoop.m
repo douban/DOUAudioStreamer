@@ -274,6 +274,8 @@ static void audio_route_change_listener(void *inClientData,
   else if (event == event_interruption_begin) {
     if (*streamer != nil &&
         [*streamer status] != DOUAudioStreamerPaused) {
+      AudioSessionSetActive(FALSE);
+
       [self performSelector:@selector(pause) onThread:[NSThread mainThread] withObject:nil waitUntilDone:NO];
       [*streamer setPausedByInterruption:YES];
     }
