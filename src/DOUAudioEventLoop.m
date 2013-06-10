@@ -272,10 +272,10 @@ static void audio_route_change_listener(void *inClientData,
   }
 #if TARGET_OS_IPHONE
   else if (event == event_interruption_begin) {
+    AudioSessionSetActive(FALSE);
+
     if (*streamer != nil &&
         [*streamer status] != DOUAudioStreamerPaused) {
-      AudioSessionSetActive(FALSE);
-
       [self performSelector:@selector(pause) onThread:[NSThread mainThread] withObject:nil waitUntilDone:NO];
       [*streamer setPausedByInterruption:YES];
     }
