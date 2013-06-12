@@ -57,7 +57,7 @@ static void *kDurationKVOKey = &kDurationKVOKey;
 
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://douban.fm/j/mine/playlist?type=n&channel=1&from=mainsite"]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://douban.fm/j/mine/playlist?type=n&channel=1004015&from=mainsite"]];
     NSData *data = [NSURLConnection sendSynchronousRequest:request
                                          returningResponse:NULL
                                                      error:NULL];
