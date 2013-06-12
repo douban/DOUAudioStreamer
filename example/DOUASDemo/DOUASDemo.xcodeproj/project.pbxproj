@@ -349,6 +349,7 @@
 		D4C38943171B9D87009D6124 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "DOUASDemo/DOUASDemo-Prefix.pch";
 				INFOPLIST_FILE = "DOUASDemo/DOUASDemo-Info.plist";
@@ -361,6 +362,7 @@
 		D4C38944171B9D87009D6124 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "DOUASDemo/DOUASDemo-Prefix.pch";
 				INFOPLIST_FILE = "DOUASDemo/DOUASDemo-Info.plist";
