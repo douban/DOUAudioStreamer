@@ -175,7 +175,8 @@ NSString *const kDOUAudioStreamerErrorDomain = @"com.douban.audio-streamer.error
 {
   @synchronized(self) {
     if (_status != DOUAudioStreamerPaused &&
-        _status != DOUAudioStreamerIdle) {
+        _status != DOUAudioStreamerIdle &&
+        _status != DOUAudioStreamerFinished) {
       return;
     }
 
@@ -192,7 +193,8 @@ NSString *const kDOUAudioStreamerErrorDomain = @"com.douban.audio-streamer.error
 {
   @synchronized(self) {
     if (_status == DOUAudioStreamerPaused ||
-        _status == DOUAudioStreamerIdle) {
+        _status == DOUAudioStreamerIdle ||
+        _status == DOUAudioStreamerFinished) {
       return;
     }
 

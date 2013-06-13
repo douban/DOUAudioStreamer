@@ -254,14 +254,16 @@ static void audio_route_change_listener(void *inClientData,
   if (event == event_play) {
     if (*streamer != nil &&
         ([*streamer status] == DOUAudioStreamerPaused ||
-         [*streamer status] == DOUAudioStreamerIdle)) {
+         [*streamer status] == DOUAudioStreamerIdle ||
+         [*streamer status] == DOUAudioStreamerFinished)) {
       [*streamer setStatus:DOUAudioStreamerPlaying];
     }
   }
   else if (event == event_pause) {
     if (*streamer != nil &&
         ([*streamer status] != DOUAudioStreamerPaused &&
-         [*streamer status] != DOUAudioStreamerIdle)) {
+         [*streamer status] != DOUAudioStreamerIdle &&
+         [*streamer status] != DOUAudioStreamerFinished)) {
       [_renderer stop];
       [*streamer setStatus:DOUAudioStreamerPaused];
     }
@@ -269,7 +271,7 @@ static void audio_route_change_listener(void *inClientData,
   else if (event == event_stop) {
     if (*streamer != nil &&
         [*streamer status] != DOUAudioStreamerIdle) {
-      if ([*streamer status] != DOUAudioStreamerPaused) {
+      if ([*streamer status] != DOUAudioStreamerPaused/*FIXME: DOUAudioStreamerFinished*/) {
         [_renderer stop];
       }
       [_renderer flush];
@@ -309,7 +311,8 @@ static void audio_route_change_listener(void *inClientData,
 
     if (*streamer != nil &&
         ([*streamer status] != DOUAudioStreamerPaused &&
-         [*streamer status] != DOUAudioStreamerIdle)) {
+         [*streamer status] != DOUAudioStreamerIdle &&
+         [*streamer status] != DOUAudioStreamerFinished)) {
       [self performSelector:@selector(pause) onThread:[NSThread mainThread] withObject:nil waitUntilDone:NO];
       [*streamer setPausedByInterruption:YES];
     }
@@ -391,6 +394,7 @@ static void audio_route_change_listener(void *inClientData,
     return;
 
   case DOUAudioDecoderEndEncountered:
+    [_renderer stop];
     [streamer setStatus:DOUAudioStreamerFinished];
     return;
 
