@@ -18,6 +18,7 @@
 #import "DOUAudioBase.h"
 #import "DOUAudioFile.h"
 #import "DOUAudioFilePreprocessor.h"
+#import "DOUAudioAnalyzer+Default.h"
 
 DOUAS_EXTERN NSString *const kDOUAudioStreamerErrorDomain;
 
