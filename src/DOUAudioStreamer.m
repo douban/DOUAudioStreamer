@@ -211,13 +211,11 @@ NSString *const kDOUAudioStreamerErrorDomain = @"com.douban.audio-streamer.error
       return;
     }
 
-    // FIXME:
-
     if ([[DOUAudioEventLoop sharedEventLoop] currentStreamer] != self) {
       return;
     }
 
-    [[DOUAudioEventLoop sharedEventLoop] pause];
+    [[DOUAudioEventLoop sharedEventLoop] stop];
     [[DOUAudioEventLoop sharedEventLoop] setCurrentStreamer:nil];
   }
 }

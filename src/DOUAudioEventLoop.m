@@ -34,6 +34,7 @@ static NSString *const kVolumeKey = @"DOUAudioStreamerVolume";
 typedef NS_ENUM(uint64_t, event_type) {
   event_play,
   event_pause,
+  event_stop,
   event_seek,
   event_streamer_changed,
   event_provider_events,
@@ -263,6 +264,16 @@ static void audio_route_change_listener(void *inClientData,
          [*streamer status] != DOUAudioStreamerIdle)) {
       [_renderer stop];
       [*streamer setStatus:DOUAudioStreamerPaused];
+    }
+  }
+  else if (event == event_stop) {
+    if (*streamer != nil &&
+        [*streamer status] != DOUAudioStreamerIdle) {
+      if ([*streamer status] != DOUAudioStreamerPaused) {
+        [_renderer stop];
+      }
+      [_renderer flush];
+      [*streamer setStatus:DOUAudioStreamerIdle];
     }
   }
   else if (event == event_seek) {
@@ -505,6 +516,11 @@ static void *event_loop_main(void *info)
 - (void)pause
 {
   [self _sendEvent:event_pause];
+}
+
+- (void)stop
+{
+  [self _sendEvent:event_stop];
 }
 
 - (id)forwardingTargetForSelector:(SEL)aSelector
