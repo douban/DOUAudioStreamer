@@ -124,6 +124,11 @@ static void *kDurationKVOKey = &kDurationKVOKey;
     [_buttonPlayPause setTitle:@"Play" forState:UIControlStateNormal];
     break;
 
+  case DOUAudioStreamerIdle:
+    [_labelInfo setText:@"idle"];
+    [_buttonPlayPause setTitle:@"Play" forState:UIControlStateNormal];
+    break;
+
   case DOUAudioStreamerFinished:
     [_labelInfo setText:@"finished"];
     [self actionNext:nil];
@@ -178,7 +183,8 @@ static void *kDurationKVOKey = &kDurationKVOKey;
 
 - (IBAction)actionPlayPause:(id)sender
 {
-  if ([_streamer status] == DOUAudioStreamerPaused) {
+  if ([_streamer status] == DOUAudioStreamerPaused ||
+      [_streamer status] == DOUAudioStreamerIdle) {
     [_streamer play];
   }
   else {
