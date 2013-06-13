@@ -16,7 +16,7 @@
 
 #import <Foundation/Foundation.h>
 
-#define kDOUAudioAnalyzerLevelCount 10
+#define kDOUAudioAnalyzerLevelCount 20
 
 @interface DOUAudioAnalyzer : NSObject
 
