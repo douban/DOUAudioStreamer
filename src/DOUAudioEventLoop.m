@@ -71,6 +71,7 @@ typedef NS_ENUM(uint64_t, event_type) {
 @implementation DOUAudioEventLoop
 
 @synthesize currentStreamer = _currentStreamer;
+@dynamic analyzers;
 
 + (instancetype)sharedEventLoop
 {
@@ -500,6 +501,16 @@ static void *event_loop_main(void *info)
 - (void)pause
 {
   [self _sendEvent:event_pause];
+}
+
+- (id)forwardingTargetForSelector:(SEL)aSelector
+{
+  if (aSelector == @selector(analyzers) ||
+      aSelector == @selector(setAnalyzers:)) {
+    return _renderer;
+  }
+
+  return [super forwardingTargetForSelector:aSelector];
 }
 
 @end

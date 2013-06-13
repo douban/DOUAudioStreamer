@@ -88,6 +88,16 @@ NSString *const kDOUAudioStreamerErrorDomain = @"com.douban.audio-streamer.error
   [[DOUAudioEventLoop sharedEventLoop] setVolume:volume];
 }
 
++ (NSArray *)analyzers
+{
+  return [[DOUAudioEventLoop sharedEventLoop] analyzers];
+}
+
++ (void)setAnalyzers:(NSArray *)analyzers
+{
+  [[DOUAudioEventLoop sharedEventLoop] setAnalyzers:analyzers];
+}
+
 - (id <DOUAudioFile>)audioFile
 {
   return _audioFile;
@@ -124,6 +134,16 @@ NSString *const kDOUAudioStreamerErrorDomain = @"com.douban.audio-streamer.error
 - (void)setVolume:(double)volume
 {
   [[self class] setVolume:volume];
+}
+
+- (NSArray *)analyzers
+{
+  return [[self class] analyzers];
+}
+
+- (void)setAnalyzers:(NSArray *)analyzers
+{
+  [[self class] setAnalyzers:analyzers];
 }
 
 - (NSString *)cachedPath
