@@ -395,6 +395,8 @@ static void audio_route_change_listener(void *inClientData,
 
   case DOUAudioDecoderEndEncountered:
     [_renderer stop];
+    [streamer setDecoder:nil];
+    [streamer setPlaybackItem:nil];
     [streamer setStatus:DOUAudioStreamerFinished];
     return;
 
