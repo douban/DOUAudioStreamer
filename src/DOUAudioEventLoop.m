@@ -275,6 +275,8 @@ static void audio_route_change_listener(void *inClientData,
         [_renderer stop];
       }
       [_renderer flush];
+      [*streamer setDecoder:nil];
+      [*streamer setPlaybackItem:nil];
       [*streamer setStatus:DOUAudioStreamerIdle];
     }
   }
