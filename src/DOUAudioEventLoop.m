@@ -252,13 +252,15 @@ static void audio_route_change_listener(void *inClientData,
 {
   if (event == event_play) {
     if (*streamer != nil &&
-        [*streamer status] == DOUAudioStreamerPaused) {
+        ([*streamer status] == DOUAudioStreamerPaused ||
+         [*streamer status] == DOUAudioStreamerIdle)) {
       [*streamer setStatus:DOUAudioStreamerPlaying];
     }
   }
   else if (event == event_pause) {
     if (*streamer != nil &&
-        [*streamer status] != DOUAudioStreamerPaused) {
+        ([*streamer status] != DOUAudioStreamerPaused &&
+         [*streamer status] != DOUAudioStreamerIdle)) {
       [_renderer stop];
       [*streamer setStatus:DOUAudioStreamerPaused];
     }
@@ -295,7 +297,8 @@ static void audio_route_change_listener(void *inClientData,
     AudioSessionSetActive(FALSE);
 
     if (*streamer != nil &&
-        [*streamer status] != DOUAudioStreamerPaused) {
+        ([*streamer status] != DOUAudioStreamerPaused &&
+         [*streamer status] != DOUAudioStreamerIdle)) {
       [self performSelector:@selector(pause) onThread:[NSThread mainThread] withObject:nil waitUntilDone:NO];
       [*streamer setPausedByInterruption:YES];
     }
@@ -403,6 +406,7 @@ static void audio_route_change_listener(void *inClientData,
       if (streamer != nil) {
         switch ([streamer status]) {
         case DOUAudioStreamerPaused:
+        case DOUAudioStreamerIdle:
         case DOUAudioStreamerFinished:
         case DOUAudioStreamerBuffering:
         case DOUAudioStreamerError:

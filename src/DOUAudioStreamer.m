@@ -67,7 +67,7 @@ NSString *const kDOUAudioStreamerErrorDomain = @"com.douban.audio-streamer.error
   self = [super init];
   if (self) {
     _audioFile = audioFile;
-    _status = DOUAudioStreamerPaused;
+    _status = DOUAudioStreamerIdle;
 
     _fileProvider = [DOUAudioFileProvider fileProviderWithAudioFile:_audioFile];
     if (_fileProvider == nil) {
@@ -174,7 +174,8 @@ NSString *const kDOUAudioStreamerErrorDomain = @"com.douban.audio-streamer.error
 - (void)play
 {
   @synchronized(self) {
-    if (_status != DOUAudioStreamerPaused) {
+    if (_status != DOUAudioStreamerPaused &&
+        _status != DOUAudioStreamerIdle) {
       return;
     }
 
@@ -190,7 +191,8 @@ NSString *const kDOUAudioStreamerErrorDomain = @"com.douban.audio-streamer.error
 - (void)pause
 {
   @synchronized(self) {
-    if (_status == DOUAudioStreamerPaused) {
+    if (_status == DOUAudioStreamerPaused ||
+        _status == DOUAudioStreamerIdle) {
       return;
     }
 
@@ -205,9 +207,11 @@ NSString *const kDOUAudioStreamerErrorDomain = @"com.douban.audio-streamer.error
 - (void)stop
 {
   @synchronized(self) {
-    if (_status == DOUAudioStreamerPaused) {
+    if (_status == DOUAudioStreamerIdle) {
       return;
     }
+
+    // FIXME:
 
     if ([[DOUAudioEventLoop sharedEventLoop] currentStreamer] != self) {
       return;

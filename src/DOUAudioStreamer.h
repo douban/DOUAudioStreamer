@@ -25,6 +25,7 @@ DOUAS_EXTERN NSString *const kDOUAudioStreamerErrorDomain;
 typedef NS_ENUM(NSUInteger, DOUAudioStreamerStatus) {
   DOUAudioStreamerPlaying,
   DOUAudioStreamerPaused,
+  DOUAudioStreamerIdle,
   DOUAudioStreamerFinished,
   DOUAudioStreamerBuffering,
   DOUAudioStreamerError
