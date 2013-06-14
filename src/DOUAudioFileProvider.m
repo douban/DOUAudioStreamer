@@ -24,6 +24,7 @@ static const NSUInteger kDefaultHeaderFormatThreshold = 4096 * 4;
 
 static __weak id <DOUAudioFile> gHintFile = nil;
 static DOUAudioFileProvider *gHintProvider = nil;
+static BOOL gLastProviderIsFinished = NO;
 
 typedef NS_ENUM(NSUInteger, DOUAudioRemoteFileHeaderFormat) {
   DOUAudioRemoteFileUnknownHeaderFormat,
@@ -374,12 +375,14 @@ typedef NS_ENUM(NSUInteger, DOUAudioRemoteFileHeaderFormat) {
     DOUAudioFileProvider *provider = gHintProvider;
     gHintFile = nil;
     gHintProvider = nil;
+    gLastProviderIsFinished = [provider isFinished];
 
     return provider;
   }
 
   gHintFile = nil;
   gHintProvider = nil;
+  gLastProviderIsFinished = NO;
 
   return [self _fileProviderWithAudioFile:audioFile];
 }
@@ -405,6 +408,10 @@ typedef NS_ENUM(NSUInteger, DOUAudioRemoteFileHeaderFormat) {
   }
 
   gHintFile = audioFile;
+
+  if (gLastProviderIsFinished) {
+    gHintProvider = [self _fileProviderWithAudioFile:gHintFile];
+  }
 }
 
 - (instancetype)_initWithAudioFile:(id <DOUAudioFile>)audioFile
