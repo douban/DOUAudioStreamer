@@ -22,6 +22,9 @@
 static const NSUInteger kID3HeaderSize = 10;
 static const NSUInteger kDefaultHeaderFormatThreshold = 4096 * 4;
 
+static __weak id <DOUAudioFile> gHintFile = nil;
+static DOUAudioFileProvider *gHintProvider = nil;
+
 typedef NS_ENUM(NSUInteger, DOUAudioRemoteFileHeaderFormat) {
   DOUAudioRemoteFileUnknownHeaderFormat,
   DOUAudioRemoteFileDefaultHeaderFormat,
@@ -167,6 +170,11 @@ typedef NS_ENUM(NSUInteger, DOUAudioRemoteFileHeaderFormat) {
   }
   else {
     [_mappedData synchronizeMappedFile];
+  }
+
+  if (gHintFile != nil &&
+      gHintProvider == nil) {
+    gHintProvider = [[[self class] alloc] _initWithAudioFile:gHintFile];
   }
 
   [self _invokeEventBlock];
@@ -339,7 +347,7 @@ typedef NS_ENUM(NSUInteger, DOUAudioRemoteFileHeaderFormat) {
 @synthesize receivedLength = _receivedLength;
 @synthesize failed = _failed;
 
-+ (instancetype)fileProviderWithAudioFile:(id <DOUAudioFile>)audioFile
++ (instancetype)_fileProviderWithAudioFile:(id <DOUAudioFile>)audioFile
 {
   if (audioFile == nil) {
     return nil;
@@ -356,6 +364,47 @@ typedef NS_ENUM(NSUInteger, DOUAudioRemoteFileHeaderFormat) {
   else {
     return [[_DOUAudioRemoteFileProvider alloc] _initWithAudioFile:audioFile];
   }
+}
+
++ (instancetype)fileProviderWithAudioFile:(id <DOUAudioFile>)audioFile
+{
+  if ((audioFile == gHintFile ||
+      [audioFile isEqual:gHintFile]) &&
+      gHintProvider != nil) {
+    DOUAudioFileProvider *provider = gHintProvider;
+    gHintFile = nil;
+    gHintProvider = nil;
+
+    return provider;
+  }
+
+  gHintFile = nil;
+  gHintProvider = nil;
+
+  return [self _fileProviderWithAudioFile:audioFile];
+}
+
++ (void)setHintWithAudioFile:(id <DOUAudioFile>)audioFile
+{
+  if (audioFile == gHintFile ||
+      [audioFile isEqual:gHintFile]) {
+    return;
+  }
+
+  gHintFile = nil;
+  gHintProvider = nil;
+
+  if (audioFile == nil) {
+    return;
+  }
+
+  NSURL *audioFileURL = [audioFile audioFileURL];
+  if (audioFileURL == nil ||
+      [audioFileURL isFileURL]) {
+    return;
+  }
+
+  gHintFile = audioFile;
 }
 
 - (instancetype)_initWithAudioFile:(id <DOUAudioFile>)audioFile

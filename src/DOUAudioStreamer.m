@@ -98,6 +98,11 @@ NSString *const kDOUAudioStreamerErrorDomain = @"com.douban.audio-streamer.error
   [[DOUAudioEventLoop sharedEventLoop] setAnalyzers:analyzers];
 }
 
++ (void)setHintWithAudioFile:(id <DOUAudioFile>)audioFile
+{
+  [DOUAudioFileProvider setHintWithAudioFile:audioFile];
+}
+
 - (id <DOUAudioFile>)audioFile
 {
   return _audioFile;

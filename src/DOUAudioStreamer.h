@@ -47,6 +47,8 @@ typedef NS_ENUM(NSInteger, DOUAudioStreamerErrorCode) {
 + (NSArray *)analyzers;
 + (void)setAnalyzers:(NSArray *)analyzers;
 
++ (void)setHintWithAudioFile:(id <DOUAudioFile>)audioFile;
+
 @property (assign, readonly) DOUAudioStreamerStatus status;
 @property (strong, readonly) NSError *error;
 

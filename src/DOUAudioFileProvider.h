@@ -22,6 +22,7 @@ typedef void (^DOUAudioFileProviderEventBlock)(void);
 @interface DOUAudioFileProvider : NSObject
 
 + (instancetype)fileProviderWithAudioFile:(id <DOUAudioFile>)audioFile;
++ (void)setHintWithAudioFile:(id <DOUAudioFile>)audioFile;
 
 @property (nonatomic, readonly) id <DOUAudioFile> audioFile;
 @property (nonatomic, copy) DOUAudioFileProviderEventBlock eventBlock;
