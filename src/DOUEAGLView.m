@@ -76,6 +76,9 @@
 
 - (void)_initialize
 {
+  [self setOpaque:NO];
+  [self setBackgroundColor:[UIColor clearColor]];
+
   [self _setupEAGLContextAndLayer];
   [self _setupFBO];
   [self _setupDisplayLink];
