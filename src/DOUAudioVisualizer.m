@@ -327,7 +327,7 @@
 
   glEnableClientState(GL_VERTEX_ARRAY);
   for (NSUInteger i = 0; i < _barGeometries.horizontalCount; ++i) {
-    NSUInteger verticalCount = lrintf(roundf(_levels.pacing[i] * _barGeometries.verticalCount));
+    NSUInteger verticalCount = lroundf(_levels.pacing[i] * _barGeometries.verticalCount);
 
     glPushMatrix();
     glTranslatef(_barGeometries.width * i, 0.0f, 0.0f);
