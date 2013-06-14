@@ -57,7 +57,7 @@ static void *kDurationKVOKey = &kDurationKVOKey;
 
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://douban.fm/j/mine/playlist?type=n&channel=1004015&from=mainsite"]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://douban.fm/j/mine/playlist?type=n&channel=0&context=channel:0%7Cmusician_id:103658&from=mainsite"]];
     NSData *data = [NSURLConnection sendSynchronousRequest:request
                                          returningResponse:NULL
                                                      error:NULL];
@@ -97,6 +97,18 @@ static void *kDurationKVOKey = &kDurationKVOKey;
   [_streamer addObserver:self forKeyPath:@"duration" options:NSKeyValueObservingOptionNew context:kDurationKVOKey];
 
   [_streamer play];
+
+  [self _setupHintForStreamer];
+}
+
+- (void)_setupHintForStreamer
+{
+  NSUInteger nextIndex = _currentIndex + 1;
+  if (nextIndex >= [_tracks count]) {
+    nextIndex = 0;
+  }
+
+  [DOUAudioStreamer setHintWithAudioFile:[_tracks objectAtIndex:nextIndex]];
 }
 
 - (void)_timerAction:(id)timer
