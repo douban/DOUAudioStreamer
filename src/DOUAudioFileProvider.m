@@ -22,7 +22,7 @@
 static const NSUInteger kID3HeaderSize = 10;
 static const NSUInteger kDefaultHeaderFormatThreshold = 4096 * 4;
 
-static __weak id <DOUAudioFile> gHintFile = nil;
+static id <DOUAudioFile> gHintFile = nil;
 static DOUAudioFileProvider *gHintProvider = nil;
 static BOOL gLastProviderIsFinished = NO;
 
