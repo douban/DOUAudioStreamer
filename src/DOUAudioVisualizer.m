@@ -45,7 +45,7 @@
 
     NSUInteger horizontalCount;
     NSUInteger verticalCount;
-  } _barGeometries;
+  } _bar;
 
   GLuint _vbo;
   GLuint _ibo;
@@ -210,31 +210,31 @@
   CGFloat width = CGRectGetWidth([self bounds]);
   CGFloat height = CGRectGetHeight([self bounds]);
 
-  _barGeometries.width = width / kDOUAudioAnalyzerLevelCount;
-  _barGeometries.height = kBarHeight;
-  _barGeometries.horizontalPadding = kBarHorizontalPadding;
-  _barGeometries.verticalPadding = kBarVerticalPadding;
+  _bar.width = width / kDOUAudioAnalyzerLevelCount;
+  _bar.height = kBarHeight;
+  _bar.horizontalPadding = kBarHorizontalPadding;
+  _bar.verticalPadding = kBarVerticalPadding;
 
-  _barGeometries.horizontalCount = kDOUAudioAnalyzerLevelCount;
-  _barGeometries.verticalCount = lrint(floor(height / kBarHeight));
+  _bar.horizontalCount = kDOUAudioAnalyzerLevelCount;
+  _bar.verticalCount = lrint(floor(height / kBarHeight));
 }
 
 - (void)_updateVBO
 {
   [self _updateBarGeometries];
 
-  NSUInteger verticesCount = _barGeometries.verticalCount * 4 * 2;
+  NSUInteger verticesCount = _bar.verticalCount * 4 * 2;
   GLfloat *vertices = (GLfloat *)malloc(sizeof(GLfloat) * verticesCount);
 
-  NSUInteger indicesCount = _barGeometries.verticalCount * 4;
+  NSUInteger indicesCount = _bar.verticalCount * 4;
   GLuint *indices = (GLuint *)malloc(sizeof(GLuint) * indicesCount);
 
-  for (NSUInteger i = 0; i < _barGeometries.verticalCount; ++i) {
+  for (NSUInteger i = 0; i < _bar.verticalCount; ++i) {
     CGRect rect;
-    rect.origin.x = _barGeometries.horizontalPadding;
-    rect.origin.y = _barGeometries.verticalPadding + _barGeometries.height * i;
-    rect.size.width = _barGeometries.width - 2.0 * _barGeometries.horizontalPadding;
-    rect.size.height = _barGeometries.height - 2.0 * _barGeometries.verticalPadding;
+    rect.origin.x = _bar.horizontalPadding;
+    rect.origin.y = _bar.verticalPadding + _bar.height * i;
+    rect.size.width = _bar.width - 2.0 * _bar.horizontalPadding;
+    rect.size.height = _bar.height - 2.0 * _bar.verticalPadding;
 
     if (i & 1) {
       vertices[i * 4 * 2 + 0 * 2 + 0] = CGRectGetMaxX(rect);
@@ -326,11 +326,11 @@
   [self _updatePacingLevels];
 
   glEnableClientState(GL_VERTEX_ARRAY);
-  for (NSUInteger i = 0; i < _barGeometries.horizontalCount; ++i) {
-    NSUInteger verticalCount = lroundf(_levels.pacing[i] * _barGeometries.verticalCount);
+  for (NSUInteger i = 0; i < _bar.horizontalCount; ++i) {
+    NSUInteger verticalCount = lroundf(_levels.pacing[i] * _bar.verticalCount);
 
     glPushMatrix();
-    glTranslatef(_barGeometries.width * i, 0.0f, 0.0f);
+    glTranslatef(_bar.width * i, 0.0f, 0.0f);
 
     glBindBuffer(GL_ARRAY_BUFFER, _vbo);
     glVertexPointer(2, GL_FLOAT, 0, NULL);
