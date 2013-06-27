@@ -19,6 +19,8 @@
 #import "DOUAudioFileProvider.h"
 #import "DOUAudioEventLoop.h"
 
+static void *kFileProviderReceivedLength = &kFileProviderReceivedLength;
+
 NSString *const kDOUAudioStreamerErrorDomain = @"com.douban.audio-streamer.error-domain";
 
 @interface DOUAudioStreamer () {
@@ -73,6 +75,10 @@ NSString *const kDOUAudioStreamerErrorDomain = @"com.douban.audio-streamer.error
     if (_fileProvider == nil) {
       return nil;
     }
+    [_fileProvider addObserver:self
+                    forKeyPath:@"receivedLength"
+                       options:NSKeyValueObservingOptionPrior
+                       context:kFileProviderReceivedLength];
   }
 
   return self;
@@ -224,6 +230,16 @@ NSString *const kDOUAudioStreamerErrorDomain = @"com.douban.audio-streamer.error
 
     [[DOUAudioEventLoop sharedEventLoop] stop];
     [[DOUAudioEventLoop sharedEventLoop] setCurrentStreamer:nil];
+  }
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+  if (context == kFileProviderReceivedLength) {
+    if ([[change objectForKey:NSKeyValueChangeNotificationIsPriorKey] boolValue]) {
+      [self willChangeValueForKey:@"receivedLength"];
+    } else {
+      [self didChangeValueForKey:@"receivedLength"];
+    }
   }
 }
 

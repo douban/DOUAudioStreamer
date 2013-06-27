@@ -19,6 +19,7 @@
 
 static void *kStatusKVOKey = &kStatusKVOKey;
 static void *kDurationKVOKey = &kDurationKVOKey;
+static void *kReceivedLengthKVOKey = &kReceivedLengthKVOKey;
 
 @interface Track : NSObject <DOUAudioFile>
 @property (nonatomic, strong) NSString *artist;
@@ -95,6 +96,7 @@ static void *kDurationKVOKey = &kDurationKVOKey;
   _streamer = [DOUAudioStreamer streamerWithAudioFile:track];
   [_streamer addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew context:kStatusKVOKey];
   [_streamer addObserver:self forKeyPath:@"duration" options:NSKeyValueObservingOptionNew context:kDurationKVOKey];
+  [_streamer addObserver:self forKeyPath:@"receivedLength" options:NSKeyValueObservingOptionNew context:kReceivedLengthKVOKey];
 
   [_streamer play];
 
@@ -169,6 +171,11 @@ static void *kDurationKVOKey = &kDurationKVOKey;
                  onThread:[NSThread mainThread]
                withObject:nil
             waitUntilDone:NO];
+  }
+  else if (context == kReceivedLengthKVOKey) {
+    NSLog(@"received progress: %d/%d (%.2f%%)",
+          _streamer.receivedLength, _streamer.expectedLength,
+          (_streamer.receivedLength * 100.f) / _streamer.expectedLength);
   }
   else {
     [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
