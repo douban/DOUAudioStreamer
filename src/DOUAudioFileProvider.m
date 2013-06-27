@@ -208,8 +208,10 @@ typedef NS_ENUM(NSUInteger, DOUAudioRemoteFileHeaderFormat) {
   NSUInteger availableSpace = _expectedLength - _receivedLength;
   NSUInteger bytesToWrite = MIN(availableSpace, [data length]);
 
+  [self willChangeValueForKey:@"receivedLength"];
   memcpy((uint8_t *)[_mappedData bytes] + _receivedLength, [data bytes], bytesToWrite);
   _receivedLength += bytesToWrite;
+  [self didChangeValueForKey:@"receivedLength"];
 }
 
 - (void)_createRequest
