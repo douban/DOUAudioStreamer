@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		D400E947171BF13F00BE7F37 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D400E946171BF13F00BE7F37 /* Accelerate.framework */; };
 		D40A255D17694680000B98AA /* DOUAudioAnalyzer+Default.m in Sources */ = {isa = PBXBuildFile; fileRef = D40A255C17694680000B98AA /* DOUAudioAnalyzer+Default.m */; };
+		D42DA81017865EE4007276E5 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D42DA80F17865EE4007276E5 /* QuartzCore.framework */; };
+		D42DA81217865EE9007276E5 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D42DA81117865EE9007276E5 /* OpenGLES.framework */; };
 		D43ACD8A1738B47B00E6A571 /* DOUAudioDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = D43ACD751738B47B00E6A571 /* DOUAudioDecoder.m */; };
 		D43ACD8B1738B47B00E6A571 /* DOUAudioEventLoop.m in Sources */ = {isa = PBXBuildFile; fileRef = D43ACD771738B47B00E6A571 /* DOUAudioEventLoop.m */; };
 		D43ACD8C1738B47B00E6A571 /* DOUAudioFilePreprocessor.m in Sources */ = {isa = PBXBuildFile; fileRef = D43ACD7A1738B47B00E6A571 /* DOUAudioFilePreprocessor.m */; };
@@ -45,6 +47,8 @@
 		D400E946171BF13F00BE7F37 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		D40A255B17694680000B98AA /* DOUAudioAnalyzer+Default.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "DOUAudioAnalyzer+Default.h"; sourceTree = "<group>"; };
 		D40A255C17694680000B98AA /* DOUAudioAnalyzer+Default.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "DOUAudioAnalyzer+Default.m"; sourceTree = "<group>"; };
+		D42DA80F17865EE4007276E5 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		D42DA81117865EE9007276E5 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		D43ACD741738B47B00E6A571 /* DOUAudioDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DOUAudioDecoder.h; sourceTree = "<group>"; };
 		D43ACD751738B47B00E6A571 /* DOUAudioDecoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DOUAudioDecoder.m; sourceTree = "<group>"; };
 		D43ACD761738B47B00E6A571 /* DOUAudioEventLoop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DOUAudioEventLoop.h; sourceTree = "<group>"; };
@@ -107,6 +111,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D42DA81217865EE9007276E5 /* OpenGLES.framework in Frameworks */,
+				D42DA81017865EE4007276E5 /* QuartzCore.framework in Frameworks */,
 				D400E947171BF13F00BE7F37 /* Accelerate.framework in Frameworks */,
 				D4C3894C171B9E3D009D6124 /* CFNetwork.framework in Frameworks */,
 				D4C3894A171B9E3A009D6124 /* CoreAudio.framework in Frameworks */,
@@ -186,6 +192,8 @@
 		D4C38921171B9D87009D6124 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D42DA81117865EE9007276E5 /* OpenGLES.framework */,
+				D42DA80F17865EE4007276E5 /* QuartzCore.framework */,
 				D400E946171BF13F00BE7F37 /* Accelerate.framework */,
 				D4C3894B171B9E3D009D6124 /* CFNetwork.framework */,
 				D4C38949171B9E3A009D6124 /* CoreAudio.framework */,
