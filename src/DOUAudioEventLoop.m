@@ -271,7 +271,7 @@ static void audio_route_change_listener(void *inClientData,
   else if (event == event_stop) {
     if (*streamer != nil &&
         [*streamer status] != DOUAudioStreamerIdle) {
-      if ([*streamer status] != DOUAudioStreamerPaused/*FIXME: DOUAudioStreamerFinished*/) {
+      if ([*streamer status] != DOUAudioStreamerPaused) {
         [_renderer stop];
       }
       [_renderer flush];
