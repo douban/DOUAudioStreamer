@@ -35,6 +35,8 @@ NSString *const kDOUAudioStreamerErrorDomain = @"com.douban.audio-streamer.error
   DOUAudioPlaybackItem *_playbackItem;
   DOUAudioDecoder *_decoder;
 
+  double _bufferingRatio;
+
 #if TARGET_OS_IPHONE
   BOOL _pausedByInterruption;
 #endif /* TARGET_OS_IPHONE */
@@ -52,6 +54,8 @@ NSString *const kDOUAudioStreamerErrorDomain = @"com.douban.audio-streamer.error
 @synthesize fileProvider = _fileProvider;
 @synthesize playbackItem = _playbackItem;
 @synthesize decoder = _decoder;
+
+@synthesize bufferingRatio = _bufferingRatio;
 
 #if TARGET_OS_IPHONE
 @synthesize pausedByInterruption = _pausedByInterruption;
@@ -73,6 +77,8 @@ NSString *const kDOUAudioStreamerErrorDomain = @"com.douban.audio-streamer.error
     if (_fileProvider == nil) {
       return nil;
     }
+
+    _bufferingRatio = (double)[_fileProvider receivedLength] / [_fileProvider expectedLength];
   }
 
   return self;

@@ -19,6 +19,7 @@
 
 static void *kStatusKVOKey = &kStatusKVOKey;
 static void *kDurationKVOKey = &kDurationKVOKey;
+static void *kBufferingRatioKVOKey = &kBufferingRatioKVOKey;
 
 @interface Track : NSObject <DOUAudioFile>
 @property (nonatomic, strong) NSString *artist;
@@ -85,6 +86,7 @@ static void *kDurationKVOKey = &kDurationKVOKey;
     [_streamer pause];
     [_streamer removeObserver:self forKeyPath:@"status"];
     [_streamer removeObserver:self forKeyPath:@"duration"];
+    [_streamer removeObserver:self forKeyPath:@"bufferingRatio"];
     _streamer = nil;
   }
 
@@ -95,6 +97,7 @@ static void *kDurationKVOKey = &kDurationKVOKey;
   _streamer = [DOUAudioStreamer streamerWithAudioFile:track];
   [_streamer addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew context:kStatusKVOKey];
   [_streamer addObserver:self forKeyPath:@"duration" options:NSKeyValueObservingOptionNew context:kDurationKVOKey];
+  [_streamer addObserver:self forKeyPath:@"bufferingRatio" options:NSKeyValueObservingOptionNew context:kBufferingRatioKVOKey];
 
   [_streamer play];
 
@@ -119,8 +122,6 @@ static void *kDurationKVOKey = &kDurationKVOKey;
   else {
     [_sliderProgress setValue:[_streamer currentTime] / [_streamer duration] animated:YES];
   }
-
-  [_labelMisc setText:[NSString stringWithFormat:@"Received %.2f/%.2f MB, Speed %.2f MB/s", (double)[_streamer receivedLength] / 1024 / 1024, (double)[_streamer expectedLength] / 1024 / 1024, (double)[_streamer downloadSpeed] / 1024 / 1024]];
 }
 
 - (void)_updateStatus
@@ -156,6 +157,11 @@ static void *kDurationKVOKey = &kDurationKVOKey;
   }
 }
 
+- (void)_updateBufferingStatus
+{
+    [_labelMisc setText:[NSString stringWithFormat:@"Received %.2f/%.2f MB (%.2f %%), Speed %.2f MB/s", (double)[_streamer receivedLength] / 1024 / 1024, (double)[_streamer expectedLength] / 1024 / 1024, [_streamer bufferingRatio] * 100.0, (double)[_streamer downloadSpeed] / 1024 / 1024]];
+}
+
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
   if (context == kStatusKVOKey) {
@@ -166,6 +172,12 @@ static void *kDurationKVOKey = &kDurationKVOKey;
   }
   else if (context == kDurationKVOKey) {
     [self performSelector:@selector(_timerAction:)
+                 onThread:[NSThread mainThread]
+               withObject:nil
+            waitUntilDone:NO];
+  }
+  else if (context == kBufferingRatioKVOKey) {
+    [self performSelector:@selector(_updateBufferingStatus)
                  onThread:[NSThread mainThread]
                withObject:nil
             waitUntilDone:NO];

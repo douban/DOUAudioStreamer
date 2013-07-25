@@ -32,6 +32,8 @@
 @property (nonatomic, strong) DOUAudioPlaybackItem *playbackItem;
 @property (nonatomic, strong) DOUAudioDecoder *decoder;
 
+@property (nonatomic, assign) double bufferingRatio;
+
 #if TARGET_OS_IPHONE
 @property (nonatomic, assign, getter = isPausedByInterruption) BOOL pausedByInterruption;
 #endif /* TARGET_OS_IPHONE */

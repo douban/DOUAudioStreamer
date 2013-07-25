@@ -303,6 +303,8 @@ static void audio_route_change_listener(void *inClientData,
         [*streamer status] == DOUAudioStreamerBuffering) {
       [*streamer setStatus:DOUAudioStreamerPlaying];
     }
+
+    [*streamer setBufferingRatio:(double)[[*streamer fileProvider] receivedLength] / [[*streamer fileProvider] expectedLength]];
   }
   else if (event == event_finalizing) {
     return NO;
