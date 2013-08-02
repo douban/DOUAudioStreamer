@@ -29,8 +29,6 @@
 #include <pthread.h>
 #include <sched.h>
 
-static const NSUInteger kBufferTime = 200;
-
 typedef NS_ENUM(uint64_t, event_type) {
   event_play,
   event_pause,
@@ -93,7 +91,7 @@ typedef NS_ENUM(uint64_t, event_type) {
     _kq = kqueue();
     pthread_mutex_init(&_mutex, NULL);
 
-    _renderer = [DOUAudioRenderer rendererWithBufferTime:kBufferTime];
+    _renderer = [DOUAudioRenderer rendererWithBufferTime:kDOUAudioStreamerBufferTime];
     [_renderer setUp];
 
     if ([[NSUserDefaults standardUserDefaults] objectForKey:kDOUAudioStreamerVolumeKey] != nil) {
@@ -127,7 +125,7 @@ typedef NS_ENUM(uint64_t, event_type) {
 + (NSUInteger)_decoderBufferSize
 {
   AudioStreamBasicDescription format = [DOUAudioDecoder defaultOutputFormat];
-  return kBufferTime * format.mSampleRate * format.mChannelsPerFrame * format.mBitsPerChannel / 8 / 1000;
+  return kDOUAudioStreamerBufferTime * format.mSampleRate * format.mChannelsPerFrame * format.mBitsPerChannel / 8 / 1000;
 }
 
 #if TARGET_OS_IPHONE

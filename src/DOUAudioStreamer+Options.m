@@ -17,6 +17,8 @@
 #import "DOUAudioStreamer+Options.h"
 
 NSString *const kDOUAudioStreamerVolumeKey = @"DOUAudioStreamerVolume";
+const NSUInteger kDOUAudioStreamerBufferTime = 200;
+
 static DOUAudioStreamerOptions gOptions = DOUAudioStreamerDefaultOptions;
 
 @implementation DOUAudioStreamer (Options)

@@ -17,6 +17,7 @@
 #import "DOUAudioStreamer.h"
 
 DOUAS_EXTERN NSString *const kDOUAudioStreamerVolumeKey;
+DOUAS_EXTERN const NSUInteger kDOUAudioStreamerBufferTime;
 
 typedef NS_OPTIONS(NSUInteger, DOUAudioStreamerOptions) {
   DOUAudioStreamerKeepPersistentVolume = 1 << 0,
