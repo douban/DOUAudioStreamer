@@ -17,6 +17,7 @@
 #import "DOUAudioFileProvider.h"
 #import "DOUSimpleHTTPRequest.h"
 #import "NSData+DOUMappedFile.h"
+#import "DOUAudioStreamer+Options.h"
 #include <CommonCrypto/CommonDigest.h>
 
 static const NSUInteger kID3HeaderSize = 10;
@@ -133,7 +134,10 @@ typedef NS_ENUM(NSUInteger, DOUAudioRemoteFileHeaderFormat) {
 
     [_request cancel];
   }
-  [[NSFileManager defaultManager] removeItemAtPath:self.cachedPath error:NULL];
+
+  if ([DOUAudioStreamer options] & DOUAudioStreamerRemoveCacheOnDeallocation) {
+    [[NSFileManager defaultManager] removeItemAtPath:_cachedPath error:NULL];
+  }
 }
 
 + (NSString *)_sha256ForAudioFileURL:(NSURL *)audioFileURL

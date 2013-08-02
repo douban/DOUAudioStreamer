@@ -17,6 +17,7 @@
 #import "DOUAudioEventLoop.h"
 #import "DOUAudioStreamer.h"
 #import "DOUAudioStreamer_Private.h"
+#import "DOUAudioStreamer+Options.h"
 #import "DOUAudioFileProvider.h"
 #import "DOUAudioPlaybackItem.h"
 #import "DOUAudioLPCM.h"
@@ -29,7 +30,6 @@
 #include <sched.h>
 
 static const NSUInteger kBufferTime = 200;
-static NSString *const kVolumeKey = @"DOUAudioStreamerVolume";
 
 typedef NS_ENUM(uint64_t, event_type) {
   event_play,
@@ -96,8 +96,8 @@ typedef NS_ENUM(uint64_t, event_type) {
     _renderer = [DOUAudioRenderer rendererWithBufferTime:kBufferTime];
     [_renderer setUp];
 
-    if ([[NSUserDefaults standardUserDefaults] objectForKey:kVolumeKey] != nil) {
-      [self setVolume:[[NSUserDefaults standardUserDefaults] doubleForKey:kVolumeKey]];
+    if ([[NSUserDefaults standardUserDefaults] objectForKey:kDOUAudioStreamerVolumeKey] != nil) {
+      [self setVolume:[[NSUserDefaults standardUserDefaults] doubleForKey:kDOUAudioStreamerVolumeKey]];
     }
     else {
       [self setVolume:1.0];
@@ -515,7 +515,11 @@ static void *event_loop_main(void *info)
 - (void)setVolume:(double)volume
 {
   [_renderer setVolume:volume];
-  [[NSUserDefaults standardUserDefaults] setDouble:volume forKey:kVolumeKey];
+
+  if ([DOUAudioStreamer options] & DOUAudioStreamerKeepPersistentVolume) {
+    [[NSUserDefaults standardUserDefaults] setDouble:volume
+                                              forKey:kDOUAudioStreamerVolumeKey];
+  }
 }
 
 - (void)play
