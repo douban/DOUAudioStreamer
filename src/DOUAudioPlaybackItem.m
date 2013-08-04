@@ -87,21 +87,104 @@ static SInt64 audio_file_get_size(void *inClientData)
   return [[item mappedData] length];
 }
 
+- (BOOL)_openWithFileTypeHint:(AudioFileTypeID)fileTypeHint
+{
+  OSStatus status;
+  status = AudioFileOpenWithCallbacks((__bridge void *)self,
+                                      audio_file_read,
+                                      NULL,
+                                      audio_file_get_size,
+                                      NULL,
+                                      fileTypeHint,
+                                      &_fileID);
+
+  return status == noErr;
+}
+
+- (BOOL)_openWithFallbacks
+{
+  NSArray *fallbackTypeIDs = [self _fallbackTypeIDs];
+  for (NSNumber *typeIDNumber in fallbackTypeIDs) {
+    AudioFileTypeID typeID = (AudioFileTypeID)[typeIDNumber unsignedLongValue];
+    if ([self _openWithFileTypeHint:typeID]) {
+      return YES;
+    }
+  }
+
+  return NO;
+}
+
+- (NSArray *)_fallbackTypeIDs
+{
+  NSMutableArray *fallbackTypeIDs = [NSMutableArray array];
+  NSMutableSet *fallbackTypeIDSet = [NSMutableSet set];
+
+  struct {
+    CFStringRef specifier;
+    AudioFilePropertyID propertyID;
+  } properties[] = {
+    { (__bridge CFStringRef)[_fileProvider mimeType], kAudioFileGlobalInfo_TypesForMIMEType },
+    { (__bridge CFStringRef)[_fileProvider fileExtension], kAudioFileGlobalInfo_TypesForExtension }
+  };
+
+  const size_t numberOfProperties = sizeof(properties) / sizeof(properties[0]);
+
+  for (size_t i = 0; i < numberOfProperties; ++i) {
+    if (properties[i].specifier == NULL) {
+      continue;
+    }
+
+    UInt32 outSize = 0;
+    OSStatus status;
+
+    status = AudioFileGetGlobalInfoSize(properties[i].propertyID,
+                                        sizeof(properties[i].specifier),
+                                        &properties[i].specifier,
+                                        &outSize);
+    if (status != noErr) {
+      continue;
+    }
+
+    size_t count = outSize / sizeof(AudioFileTypeID);
+    AudioFileTypeID *buffer = (AudioFileTypeID *)malloc(outSize);
+    if (buffer == NULL) {
+      continue;
+    }
+
+    status = AudioFileGetGlobalInfo(properties[i].propertyID,
+                                    sizeof(properties[i].specifier),
+                                    &properties[i].specifier,
+                                    &outSize,
+                                    buffer);
+    if (status != noErr) {
+      free(buffer);
+      continue;
+    }
+
+    for (size_t j = 0; j < count; ++j) {
+      NSNumber *tid = [NSNumber numberWithUnsignedLong:buffer[j]];
+      if ([fallbackTypeIDSet containsObject:tid]) {
+        continue;
+      }
+
+      [fallbackTypeIDs addObject:tid];
+      [fallbackTypeIDSet addObject:tid];
+    }
+
+    free(buffer);
+  }
+
+  return fallbackTypeIDs;
+}
+
 - (BOOL)open
 {
   if ([self isOpened]) {
     return YES;
   }
 
-  OSStatus status = AudioFileOpenWithCallbacks((__bridge void *)self,
-                                               audio_file_read,
-                                               NULL,
-                                               audio_file_get_size,
-                                               NULL,
-                                               0,
-                                               &_fileID);
-
-  if (status != noErr) {
+  if (![self _openWithFileTypeHint:0] &&
+      ![self _openWithFallbacks]) {
     _fileID = NULL;
     return NO;
   }
