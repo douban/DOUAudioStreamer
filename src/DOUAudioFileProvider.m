@@ -20,6 +20,12 @@
 #import "DOUAudioStreamer+Options.h"
 #include <CommonCrypto/CommonDigest.h>
 
+#if TARGET_OS_IPHONE
+#include <MobileCoreServices/MobileCoreServices.h>
+#else /* TARGET_OS_IPHONE */
+#include <CoreServices/CoreServices.h>
+#endif /* TARGET_OS_IPHONE */
+
 static const NSUInteger kID3HeaderSize = 10;
 static const NSUInteger kDefaultHeaderFormatThreshold = 4096 * 4;
 
@@ -40,6 +46,8 @@ typedef NS_ENUM(NSUInteger, DOUAudioRemoteFileHeaderFormat) {
   DOUAudioFileProviderEventBlock _eventBlock;
   NSString *_cachedPath;
   NSURL *_cachedURL;
+  NSString *_mimeType;
+  NSString *_fileExtension;
   NSData *_mappedData;
   NSUInteger _expectedLength;
   NSUInteger _receivedLength;
@@ -88,6 +96,29 @@ typedef NS_ENUM(NSUInteger, DOUAudioRemoteFileHeaderFormat) {
   }
 
   return self;
+}
+
+- (NSString *)mimeType
+{
+  if (_mimeType == nil &&
+      [self fileExtension] != nil) {
+    CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[self fileExtension], NULL);
+    if (uti != NULL) {
+      _mimeType = CFBridgingRelease(UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType));
+      CFRelease(uti);
+    }
+  }
+
+  return _mimeType;
+}
+
+- (NSString *)fileExtension
+{
+  if (_fileExtension == nil) {
+    _fileExtension = [[[self audioFile] audioFileURL] pathExtension];
+  }
+
+  return _fileExtension;
 }
 
 - (NSUInteger)downloadSpeed
@@ -200,6 +231,8 @@ typedef NS_ENUM(NSUInteger, DOUAudioRemoteFileHeaderFormat) {
   [[NSFileManager defaultManager] createFileAtPath:_cachedPath contents:nil attributes:nil];
   [[NSFileHandle fileHandleForWritingAtPath:_cachedPath] truncateFileAtOffset:_expectedLength];
 
+  _mimeType = [[_request responseHeaders] objectForKey:@"Content-Type"];
+
   _mappedData = [NSData modifiableDataWithMappedContentsOfFile:_cachedPath];
 }
 
@@ -236,6 +269,15 @@ typedef NS_ENUM(NSUInteger, DOUAudioRemoteFileHeaderFormat) {
   [_request setDidReceiveDataBlock:^(NSData *data) {
     [_self _requestDidReceiveData:data];
   }];
+}
+
+- (NSString *)fileExtension
+{
+  if (_fileExtension == nil) {
+    _fileExtension = [[[[self audioFile] audioFileURL] path] pathExtension];
+  }
+
+  return _fileExtension;
 }
 
 - (NSUInteger)downloadSpeed
@@ -347,6 +389,8 @@ typedef NS_ENUM(NSUInteger, DOUAudioRemoteFileHeaderFormat) {
 @synthesize eventBlock = _eventBlock;
 @synthesize cachedPath = _cachedPath;
 @synthesize cachedURL = _cachedURL;
+@synthesize mimeType = _mimeType;
+@synthesize fileExtension = _fileExtension;
 @synthesize mappedData = _mappedData;
 @synthesize expectedLength = _expectedLength;
 @synthesize receivedLength = _receivedLength;

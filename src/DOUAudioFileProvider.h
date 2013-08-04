@@ -30,6 +30,9 @@ typedef void (^DOUAudioFileProviderEventBlock)(void);
 @property (nonatomic, readonly) NSString *cachedPath;
 @property (nonatomic, readonly) NSURL *cachedURL;
 
+@property (nonatomic, readonly) NSString *mimeType;
+@property (nonatomic, readonly) NSString *fileExtension;
+
 @property (nonatomic, readonly) NSData *mappedData;
 
 @property (nonatomic, readonly) NSUInteger expectedLength;
