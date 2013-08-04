@@ -25,6 +25,7 @@
 		D43AFF97176A938100D1FECF /* DOUAudioVisualizer.m in Sources */ = {isa = PBXBuildFile; fileRef = D43AFF92176A938100D1FECF /* DOUAudioVisualizer.m */; };
 		D43AFF98176A938100D1FECF /* DOUEAGL1View.m in Sources */ = {isa = PBXBuildFile; fileRef = D43AFF94176A938100D1FECF /* DOUEAGL1View.m */; };
 		D43AFF99176A938100D1FECF /* DOUEAGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = D43AFF96176A938100D1FECF /* DOUEAGLView.m */; };
+		D4632A6F17AE27E30065ECDE /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4632A6E17AE27E30065ECDE /* MobileCoreServices.framework */; };
 		D47CA3A217680ADA002D73B4 /* DOUAudioAnalyzer.m in Sources */ = {isa = PBXBuildFile; fileRef = D47CA3A117680ADA002D73B4 /* DOUAudioAnalyzer.m */; };
 		D47CA3A717680AF1002D73B4 /* DOUAudioFrequencyAnalyzer.m in Sources */ = {isa = PBXBuildFile; fileRef = D47CA3A417680AF1002D73B4 /* DOUAudioFrequencyAnalyzer.m */; };
 		D47CA3A817680AF1002D73B4 /* DOUAudioSpatialAnalyzer.m in Sources */ = {isa = PBXBuildFile; fileRef = D47CA3A617680AF1002D73B4 /* DOUAudioSpatialAnalyzer.m */; };
@@ -80,6 +81,7 @@
 		D43AFF94176A938100D1FECF /* DOUEAGL1View.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DOUEAGL1View.m; sourceTree = "<group>"; };
 		D43AFF95176A938100D1FECF /* DOUEAGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DOUEAGLView.h; sourceTree = "<group>"; };
 		D43AFF96176A938100D1FECF /* DOUEAGLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DOUEAGLView.m; sourceTree = "<group>"; };
+		D4632A6E17AE27E30065ECDE /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		D47CA39E17680AC5002D73B4 /* DOUAudioBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DOUAudioBase.h; sourceTree = "<group>"; };
 		D47CA39F17680ADA002D73B4 /* DOUAudioAnalyzer_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DOUAudioAnalyzer_Private.h; sourceTree = "<group>"; };
 		D47CA3A017680ADA002D73B4 /* DOUAudioAnalyzer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DOUAudioAnalyzer.h; sourceTree = "<group>"; };
@@ -114,6 +116,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D4632A6F17AE27E30065ECDE /* MobileCoreServices.framework in Frameworks */,
 				D42DA81217865EE9007276E5 /* OpenGLES.framework in Frameworks */,
 				D42DA81017865EE4007276E5 /* QuartzCore.framework in Frameworks */,
 				D400E947171BF13F00BE7F37 /* Accelerate.framework in Frameworks */,
@@ -197,6 +200,7 @@
 		D4C38921171B9D87009D6124 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D4632A6E17AE27E30065ECDE /* MobileCoreServices.framework */,
 				D42DA81117865EE9007276E5 /* OpenGLES.framework */,
 				D42DA80F17865EE4007276E5 /* QuartzCore.framework */,
 				D400E946171BF13F00BE7F37 /* Accelerate.framework */,
