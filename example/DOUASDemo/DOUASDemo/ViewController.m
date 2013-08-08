@@ -16,6 +16,7 @@
 
 #import "ViewController.h"
 #import "DOUAudioStreamer.h"
+#import "DOUAudioStreamer+Options.h"
 
 static void *kStatusKVOKey = &kStatusKVOKey;
 static void *kDurationKVOKey = &kDurationKVOKey;
@@ -50,6 +51,8 @@ static void *kBufferingRatioKVOKey = &kBufferingRatioKVOKey;
   dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
     [self _tracks];
   });
+
+  [DOUAudioStreamer setOptions:[DOUAudioStreamer options] | DOUAudioStreamerRequireSHA256];
 }
 
 + (NSArray *)_tracks
@@ -101,6 +104,7 @@ static void *kBufferingRatioKVOKey = &kBufferingRatioKVOKey;
 
   [_streamer play];
 
+  [self _updateBufferingStatus];
   [self _setupHintForStreamer];
 }
 
@@ -159,7 +163,11 @@ static void *kBufferingRatioKVOKey = &kBufferingRatioKVOKey;
 
 - (void)_updateBufferingStatus
 {
-    [_labelMisc setText:[NSString stringWithFormat:@"Received %.2f/%.2f MB (%.2f %%), Speed %.2f MB/s", (double)[_streamer receivedLength] / 1024 / 1024, (double)[_streamer expectedLength] / 1024 / 1024, [_streamer bufferingRatio] * 100.0, (double)[_streamer downloadSpeed] / 1024 / 1024]];
+  [_labelMisc setText:[NSString stringWithFormat:@"Received %.2f/%.2f MB (%.2f %%), Speed %.2f MB/s", (double)[_streamer receivedLength] / 1024 / 1024, (double)[_streamer expectedLength] / 1024 / 1024, [_streamer bufferingRatio] * 100.0, (double)[_streamer downloadSpeed] / 1024 / 1024]];
+
+  if ([_streamer bufferingRatio] >= 1.0) {
+    NSLog(@"sha256: %@", [_streamer sha256]);
+  }
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
