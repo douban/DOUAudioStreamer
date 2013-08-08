@@ -22,6 +22,7 @@ DOUAS_EXTERN const NSUInteger kDOUAudioStreamerBufferTime;
 typedef NS_OPTIONS(NSUInteger, DOUAudioStreamerOptions) {
   DOUAudioStreamerKeepPersistentVolume = 1 << 0,
   DOUAudioStreamerRemoveCacheOnDeallocation = 1 << 1,
+  DOUAudioStreamerRequireSHA256 = 1 << 2,
 
   DOUAudioStreamerDefaultOptions = DOUAudioStreamerKeepPersistentVolume |
                                    DOUAudioStreamerRemoveCacheOnDeallocation

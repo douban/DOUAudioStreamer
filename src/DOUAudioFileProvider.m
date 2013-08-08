@@ -48,6 +48,7 @@ typedef NS_ENUM(NSUInteger, DOUAudioRemoteFileHeaderFormat) {
   NSURL *_cachedURL;
   NSString *_mimeType;
   NSString *_fileExtension;
+  NSString *_sha256;
   NSData *_mappedData;
   NSUInteger _expectedLength;
   NSUInteger _receivedLength;
@@ -69,6 +70,8 @@ typedef NS_ENUM(NSUInteger, DOUAudioRemoteFileHeaderFormat) {
   DOUAudioRemoteFileHeaderFormat _headerFormat;
   uint8_t _id3Header[kID3HeaderSize];
   uint32_t _id3BodySize;
+
+  CC_SHA256_CTX *_sha256Ctx;
 }
 @end
 
@@ -121,6 +124,25 @@ typedef NS_ENUM(NSUInteger, DOUAudioRemoteFileHeaderFormat) {
   return _fileExtension;
 }
 
+- (NSString *)sha256
+{
+  if (_sha256 == nil &&
+      [DOUAudioStreamer options] & DOUAudioStreamerRequireSHA256 &&
+      [self mappedData] != nil) {
+    unsigned char hash[CC_SHA256_DIGEST_LENGTH];
+    CC_SHA256([[self mappedData] bytes], (CC_LONG)[[self mappedData] length], hash);
+
+    NSMutableString *result = [NSMutableString stringWithCapacity:CC_SHA256_DIGEST_LENGTH * 2];
+    for (size_t i = 0; i < CC_SHA256_DIGEST_LENGTH; ++i) {
+      [result appendFormat:@"%02x", hash[i]];
+    }
+
+    _sha256 = [result copy];
+  }
+
+  return _sha256;
+}
+
 - (NSUInteger)downloadSpeed
 {
   return _receivedLength;
@@ -148,6 +170,12 @@ typedef NS_ENUM(NSUInteger, DOUAudioRemoteFileHeaderFormat) {
   if (self) {
     _audioFileURL = [audioFile audioFileURL];
     _headerFormat = DOUAudioRemoteFileUnknownHeaderFormat;
+
+    if ([DOUAudioStreamer options] & DOUAudioStreamerRequireSHA256) {
+      _sha256Ctx = (CC_SHA256_CTX *)malloc(sizeof(CC_SHA256_CTX));
+      CC_SHA256_Init(_sha256Ctx);
+    }
+
     [self _createRequest];
     [_request start];
   }
@@ -164,6 +192,10 @@ typedef NS_ENUM(NSUInteger, DOUAudioRemoteFileHeaderFormat) {
     [_request setDidReceiveDataBlock:NULL];
 
     [_request cancel];
+  }
+
+  if (_sha256Ctx != NULL) {
+    free(_sha256Ctx);
   }
 
   if ([DOUAudioStreamer options] & DOUAudioStreamerRemoveCacheOnDeallocation) {
@@ -208,6 +240,19 @@ typedef NS_ENUM(NSUInteger, DOUAudioRemoteFileHeaderFormat) {
     [_mappedData synchronizeMappedFile];
   }
 
+  if (!_failed &&
+      _sha256Ctx != NULL) {
+    unsigned char hash[CC_SHA256_DIGEST_LENGTH];
+    CC_SHA256_Final(hash, _sha256Ctx);
+
+    NSMutableString *result = [NSMutableString stringWithCapacity:CC_SHA256_DIGEST_LENGTH * 2];
+    for (size_t i = 0; i < CC_SHA256_DIGEST_LENGTH; ++i) {
+      [result appendFormat:@"%02x", hash[i]];
+    }
+
+    _sha256 = [result copy];
+  }
+
   if (gHintFile != nil &&
       gHintProvider == nil) {
     gHintProvider = [[[self class] alloc] _initWithAudioFile:gHintFile];
@@ -247,6 +292,10 @@ typedef NS_ENUM(NSUInteger, DOUAudioRemoteFileHeaderFormat) {
 
   memcpy((uint8_t *)[_mappedData bytes] + _receivedLength, [data bytes], bytesToWrite);
   _receivedLength += bytesToWrite;
+
+  if (_sha256Ctx != NULL) {
+    CC_SHA256_Update(_sha256Ctx, [data bytes], (CC_LONG)[data length]);
+  }
 }
 
 - (void)_createRequest
@@ -391,6 +440,7 @@ typedef NS_ENUM(NSUInteger, DOUAudioRemoteFileHeaderFormat) {
 @synthesize cachedURL = _cachedURL;
 @synthesize mimeType = _mimeType;
 @synthesize fileExtension = _fileExtension;
+@synthesize sha256 = _sha256;
 @synthesize mappedData = _mappedData;
 @synthesize expectedLength = _expectedLength;
 @synthesize receivedLength = _receivedLength;

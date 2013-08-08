@@ -167,6 +167,11 @@ NSString *const kDOUAudioStreamerErrorDomain = @"com.douban.audio-streamer.error
   return [_fileProvider cachedURL];
 }
 
+- (NSString *)sha256
+{
+  return [_fileProvider sha256];
+}
+
 - (NSUInteger)expectedLength
 {
   return [_fileProvider expectedLength];

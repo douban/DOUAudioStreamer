@@ -32,6 +32,7 @@ typedef void (^DOUAudioFileProviderEventBlock)(void);
 
 @property (nonatomic, readonly) NSString *mimeType;
 @property (nonatomic, readonly) NSString *fileExtension;
+@property (nonatomic, readonly) NSString *sha256;
 
 @property (nonatomic, readonly) NSData *mappedData;
 

@@ -64,6 +64,8 @@ typedef NS_ENUM(NSInteger, DOUAudioStreamerErrorCode) {
 @property (nonatomic, readonly) NSString *cachedPath;
 @property (nonatomic, readonly) NSURL *cachedURL;
 
+@property (nonatomic, readonly) NSString *sha256;
+
 @property (nonatomic, readonly) NSUInteger expectedLength;
 @property (nonatomic, readonly) NSUInteger receivedLength;
 @property (nonatomic, readonly) NSUInteger downloadSpeed;
