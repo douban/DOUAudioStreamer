@@ -40,11 +40,12 @@ typedef NS_ENUM(uint64_t, event_type) {
 #if TARGET_OS_IPHONE
   event_interruption_begin,
   event_interruption_end,
+  event_old_device_unavailable,
 #endif /* TARGET_OS_IPHONE */
 
   event_first = event_play,
 #if TARGET_OS_IPHONE
-  event_last = event_interruption_end,
+  event_last = event_old_device_unavailable,
 #else /* TARGET_OS_IPHONE */
   event_last = event_finalizing,
 #endif /* TARGET_OS_IPHONE */
@@ -141,6 +142,13 @@ typedef NS_ENUM(uint64_t, event_type) {
   }
 }
 
+- (void)_handleAudioRouteChangeWithReason:(SInt32)reason
+{
+  if (reason == kAudioSessionRouteChangeReason_OldDeviceUnavailable) {
+    [self _sendEvent:event_old_device_unavailable];
+  }
+}
+
 static void audio_session_interruption_listener(void *inClientData, UInt32 inInterruptionState)
 {
   __unsafe_unretained DOUAudioEventLoop *eventLoop = (__bridge DOUAudioEventLoop *)inClientData;
@@ -163,10 +171,8 @@ static void audio_route_change_listener(void *inClientData,
   SInt32 routeChangeReason;
   CFNumberGetValue(routeChangeReasonRef, kCFNumberSInt32Type, &routeChangeReason);
 
-  if (routeChangeReason == kAudioSessionRouteChangeReason_OldDeviceUnavailable) {
-    __unsafe_unretained DOUAudioEventLoop *eventLoop = (__bridge DOUAudioEventLoop *)inClientData;
-    [eventLoop pause];
-  }
+  __unsafe_unretained DOUAudioEventLoop *eventLoop = (__bridge DOUAudioEventLoop *)inClientData;
+  [eventLoop _handleAudioRouteChangeWithReason:routeChangeReason];
 }
 
 - (void)_setupAudioSession
@@ -327,6 +333,20 @@ static void audio_route_change_listener(void *inClientData,
         [*streamer isPausedByInterruption]) {
       [*streamer setPausedByInterruption:NO];
       [self performSelector:@selector(play) onThread:[NSThread mainThread] withObject:nil waitUntilDone:NO];
+    }
+  }
+  else if (event == event_old_device_unavailable) {
+    if (*streamer != nil) {
+      if ([*streamer status] != DOUAudioStreamerPaused &&
+          [*streamer status] != DOUAudioStreamerIdle &&
+          [*streamer status] != DOUAudioStreamerFinished) {
+        [self performSelector:@selector(pause)
+                     onThread:[NSThread mainThread]
+                   withObject:nil
+                waitUntilDone:NO];
+      }
+
+      [*streamer setPausedByInterruption:NO];
     }
   }
 #endif /* TARGET_OS_IPHONE */
