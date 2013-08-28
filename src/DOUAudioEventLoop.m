@@ -134,6 +134,7 @@ typedef NS_ENUM(uint64_t, event_type) {
 - (void)_handleAudioSessionInterruptionWithState:(UInt32)state
 {
   if (state == kAudioSessionBeginInterruption) {
+    [_renderer setInterrupted:YES];
     [_renderer stop];
     [self _sendEvent:event_interruption_begin];
   }
@@ -261,6 +262,7 @@ static void audio_route_change_listener(void *inClientData,
          [*streamer status] == DOUAudioStreamerIdle ||
          [*streamer status] == DOUAudioStreamerFinished)) {
       [*streamer setStatus:DOUAudioStreamerPlaying];
+      [_renderer setInterrupted:NO];
     }
   }
   else if (event == event_pause) {
@@ -325,6 +327,7 @@ static void audio_route_change_listener(void *inClientData,
   }
   else if (event == event_interruption_end) {
     AudioSessionSetActive(TRUE);
+    [_renderer setInterrupted:NO];
 
     if (*streamer != nil &&
         [*streamer status] == DOUAudioStreamerPaused &&

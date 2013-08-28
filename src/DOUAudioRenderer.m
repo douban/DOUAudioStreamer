@@ -389,6 +389,11 @@ static OSStatus property_listener_default_output_device(AudioObjectID inObjectID
     NSUInteger emptyByteCount = _bufferByteCount - _validByteCount;
     while (emptyByteCount == 0) {
       if (!_started) {
+        if (_interrupted) {
+          pthread_mutex_unlock(&_mutex);
+          return;
+        }
+
         pthread_mutex_unlock(&_mutex);
         AudioOutputUnitStart(_outputAudioUnit);
         pthread_mutex_lock(&_mutex);
@@ -507,6 +512,13 @@ static OSStatus property_listener_default_output_device(AudioObjectID inObjectID
   }
 
   return base * interval;
+}
+
+- (void)setInterrupted:(BOOL)interrupted
+{
+  pthread_mutex_lock(&_mutex);
+  _interrupted = interrupted;
+  pthread_mutex_unlock(&_mutex);
 }
 
 - (double)volume
