@@ -19,6 +19,7 @@
 #import "NSData+DOUMappedFile.h"
 #import "DOUAudioStreamer+Options.h"
 #include <CommonCrypto/CommonDigest.h>
+#include <AudioToolbox/AudioToolbox.h>
 
 #if TARGET_OS_IPHONE
 #include <MobileCoreServices/MobileCoreServices.h>
@@ -26,19 +27,9 @@
 #include <CoreServices/CoreServices.h>
 #endif /* TARGET_OS_IPHONE */
 
-static const NSUInteger kID3HeaderSize = 10;
-static const NSUInteger kDefaultHeaderFormatThreshold = 4096 * 4;
-
 static id <DOUAudioFile> gHintFile = nil;
 static DOUAudioFileProvider *gHintProvider = nil;
 static BOOL gLastProviderIsFinished = NO;
-
-typedef NS_ENUM(NSUInteger, DOUAudioRemoteFileHeaderFormat) {
-  DOUAudioRemoteFileUnknownHeaderFormat,
-  DOUAudioRemoteFileDefaultHeaderFormat,
-  DOUAudioRemoteFileID3v2HeaderFormat,
-  DOUAudioRemoteFileID3v3HeaderFormat
-};
 
 @interface DOUAudioFileProvider () {
 @protected
@@ -67,11 +58,11 @@ typedef NS_ENUM(NSUInteger, DOUAudioRemoteFileHeaderFormat) {
   DOUSimpleHTTPRequest *_request;
   NSURL *_audioFileURL;
 
-  DOUAudioRemoteFileHeaderFormat _headerFormat;
-  uint8_t _id3Header[kID3HeaderSize];
-  uint32_t _id3BodySize;
-
   CC_SHA256_CTX *_sha256Ctx;
+
+  AudioFileStreamID _audioFileStreamID;
+  BOOL _readyToProducePackets;
+  BOOL _requestCompleted;
 }
 @end
 
@@ -164,18 +155,21 @@ typedef NS_ENUM(NSUInteger, DOUAudioRemoteFileHeaderFormat) {
 
 @implementation _DOUAudioRemoteFileProvider
 
+@synthesize ready = _readyToProducePackets;
+@synthesize finished = _requestCompleted;
+
 - (instancetype)_initWithAudioFile:(id <DOUAudioFile>)audioFile
 {
   self = [super _initWithAudioFile:audioFile];
   if (self) {
     _audioFileURL = [audioFile audioFileURL];
-    _headerFormat = DOUAudioRemoteFileUnknownHeaderFormat;
 
     if ([DOUAudioStreamer options] & DOUAudioStreamerRequireSHA256) {
       _sha256Ctx = (CC_SHA256_CTX *)malloc(sizeof(CC_SHA256_CTX));
       CC_SHA256_Init(_sha256Ctx);
     }
 
+    [self _openAudioFileStream];
     [self _createRequest];
     [_request start];
   }
@@ -197,6 +191,8 @@ typedef NS_ENUM(NSUInteger, DOUAudioRemoteFileHeaderFormat) {
   if (_sha256Ctx != NULL) {
     free(_sha256Ctx);
   }
+
+  [self _closeAudioFileStream];
 
   if ([DOUAudioStreamer options] & DOUAudioStreamerRemoveCacheOnDeallocation) {
     [[NSFileManager defaultManager] removeItemAtPath:_cachedPath error:NULL];
@@ -237,6 +233,7 @@ typedef NS_ENUM(NSUInteger, DOUAudioRemoteFileHeaderFormat) {
     _failed = YES;
   }
   else {
+    _requestCompleted = YES;
     [_mappedData synchronizeMappedFile];
   }
 
@@ -296,6 +293,41 @@ typedef NS_ENUM(NSUInteger, DOUAudioRemoteFileHeaderFormat) {
   if (_sha256Ctx != NULL) {
     CC_SHA256_Update(_sha256Ctx, [data bytes], (CC_LONG)[data length]);
   }
+
+  if (!_readyToProducePackets && !_failed) {
+    OSStatus status = kAudioFileStreamError_UnsupportedFileType;
+
+    if (_audioFileStreamID != NULL) {
+      status = AudioFileStreamParseBytes(_audioFileStreamID,
+                                         (UInt32)[data length],
+                                         [data bytes],
+                                         0);
+    }
+
+    if (status != noErr) {
+      NSArray *fallbackTypeIDs = [self _fallbackTypeIDs];
+      for (NSNumber *typeIDNumber in fallbackTypeIDs) {
+        AudioFileTypeID typeID = (AudioFileTypeID)[typeIDNumber unsignedLongValue];
+        [self _closeAudioFileStream];
+        [self _openAudioFileStreamWithFileTypeHint:typeID];
+
+        if (_audioFileStreamID != NULL) {
+          status = AudioFileStreamParseBytes(_audioFileStreamID,
+                                             (UInt32)_receivedLength,
+                                             [_mappedData bytes],
+                                             0);
+
+          if (status == noErr) {
+            break;
+          }
+        }
+      }
+
+      if (status != noErr) {
+        _failed = YES;
+      }
+    }
+  }
 }
 
 - (void)_createRequest
@@ -320,6 +352,131 @@ typedef NS_ENUM(NSUInteger, DOUAudioRemoteFileHeaderFormat) {
   }];
 }
 
+- (void)_handleAudioFileStreamProperty:(AudioFileStreamPropertyID)propertyID
+{
+  if (propertyID == kAudioFileStreamProperty_ReadyToProducePackets) {
+    _readyToProducePackets = YES;
+  }
+}
+
+- (void)_handleAudioFileStreamPackets:(const void *)packets
+                        numberOfBytes:(UInt32)numberOfBytes
+                      numberOfPackets:(UInt32)numberOfPackets
+                   packetDescriptions:(AudioStreamPacketDescription *)packetDescriptioins
+{
+}
+
+static void audio_file_stream_property_listener_proc(void *inClientData,
+                                                AudioFileStreamID inAudioFileStream,
+                                                AudioFileStreamPropertyID inPropertyID,
+                                                UInt32 *ioFlags)
+{
+  __unsafe_unretained _DOUAudioRemoteFileProvider *fileProvider = (__bridge _DOUAudioRemoteFileProvider *)inClientData;
+  [fileProvider _handleAudioFileStreamProperty:inPropertyID];
+}
+
+static void audio_file_stream_packets_proc(void *inClientData,
+                                           UInt32 inNumberBytes,
+                                           UInt32 inNumberPackets,
+                                           const void *inInputData,
+                                           AudioStreamPacketDescription	*inPacketDescriptions)
+{
+  __unsafe_unretained _DOUAudioRemoteFileProvider *fileProvider = (__bridge _DOUAudioRemoteFileProvider *)inClientData;
+  [fileProvider _handleAudioFileStreamPackets:inInputData
+                                numberOfBytes:inNumberBytes
+                              numberOfPackets:inNumberPackets
+                           packetDescriptions:inPacketDescriptions];
+}
+
+- (void)_openAudioFileStream
+{
+  [self _openAudioFileStreamWithFileTypeHint:0];
+}
+
+- (void)_openAudioFileStreamWithFileTypeHint:(AudioFileTypeID)fileTypeHint
+{
+  OSStatus status = AudioFileStreamOpen((__bridge void *)self,
+                                        audio_file_stream_property_listener_proc,
+                                        audio_file_stream_packets_proc,
+                                        fileTypeHint,
+                                        &_audioFileStreamID);
+
+  if (status != noErr) {
+    _audioFileStreamID = NULL;
+  }
+}
+
+- (void)_closeAudioFileStream
+{
+  if (_audioFileStreamID != NULL) {
+    AudioFileStreamClose(_audioFileStreamID);
+    _audioFileStreamID = NULL;
+  }
+}
+
+- (NSArray *)_fallbackTypeIDs
+{
+  NSMutableArray *fallbackTypeIDs = [NSMutableArray array];
+  NSMutableSet *fallbackTypeIDSet = [NSMutableSet set];
+
+  struct {
+    CFStringRef specifier;
+    AudioFilePropertyID propertyID;
+  } properties[] = {
+    { (__bridge CFStringRef)[self mimeType], kAudioFileGlobalInfo_TypesForMIMEType },
+    { (__bridge CFStringRef)[self fileExtension], kAudioFileGlobalInfo_TypesForExtension }
+  };
+
+  const size_t numberOfProperties = sizeof(properties) / sizeof(properties[0]);
+
+  for (size_t i = 0; i < numberOfProperties; ++i) {
+    if (properties[i].specifier == NULL) {
+      continue;
+    }
+
+    UInt32 outSize = 0;
+    OSStatus status;
+
+    status = AudioFileGetGlobalInfoSize(properties[i].propertyID,
+                                        sizeof(properties[i].specifier),
+                                        &properties[i].specifier,
+                                        &outSize);
+    if (status != noErr) {
+      continue;
+    }
+
+    size_t count = outSize / sizeof(AudioFileTypeID);
+    AudioFileTypeID *buffer = (AudioFileTypeID *)malloc(outSize);
+    if (buffer == NULL) {
+      continue;
+    }
+
+    status = AudioFileGetGlobalInfo(properties[i].propertyID,
+                                    sizeof(properties[i].specifier),
+                                    &properties[i].specifier,
+                                    &outSize,
+                                    buffer);
+    if (status != noErr) {
+      free(buffer);
+      continue;
+    }
+
+    for (size_t j = 0; j < count; ++j) {
+      NSNumber *tid = [NSNumber numberWithUnsignedLong:buffer[j]];
+      if ([fallbackTypeIDSet containsObject:tid]) {
+        continue;
+      }
+
+      [fallbackTypeIDs addObject:tid];
+      [fallbackTypeIDSet addObject:tid];
+    }
+
+    free(buffer);
+  }
+
+  return fallbackTypeIDs;
+}
+
 - (NSString *)fileExtension
 {
   if (_fileExtension == nil) {
@@ -332,100 +489,6 @@ typedef NS_ENUM(NSUInteger, DOUAudioRemoteFileHeaderFormat) {
 - (NSUInteger)downloadSpeed
 {
   return [_request downloadSpeed];
-}
-
-- (BOOL)_checkReadyWithThreshold:(NSUInteger)threshold
-{
-  if (_expectedLength <= threshold) {
-    if (_receivedLength > _expectedLength) {
-      return YES;
-    }
-  }
-  else if (_receivedLength > threshold) {
-    return YES;
-  }
-
-  return NO;
-}
-
-- (BOOL)_checkReadyDefault
-{
-  return [self _checkReadyWithThreshold:kDefaultHeaderFormatThreshold];
-}
-
-- (BOOL)_checkReadyID3v2
-{
-  return [self _checkReadyWithThreshold:MAX(kID3HeaderSize + _id3BodySize,
-                                            kDefaultHeaderFormatThreshold)];
-}
-
-- (BOOL)_checkReadyID3v3
-{
-  return [self _checkReadyWithThreshold:MAX(kID3HeaderSize + _id3BodySize,
-                                            kDefaultHeaderFormatThreshold)];
-}
-
-- (BOOL)_checkReady
-{
-  switch (_headerFormat) {
-  case DOUAudioRemoteFileDefaultHeaderFormat:
-    return [self _checkReadyDefault];
-
-  case DOUAudioRemoteFileID3v2HeaderFormat:
-    return [self _checkReadyID3v2];
-
-  case DOUAudioRemoteFileID3v3HeaderFormat:
-    return [self _checkReadyID3v3];
-
-  case DOUAudioRemoteFileUnknownHeaderFormat:
-  default:
-    break;
-  }
-
-  if (_expectedLength < kID3HeaderSize) {
-    if (_receivedLength > _expectedLength) {
-      return YES;
-    }
-  }
-  else if (_receivedLength >= kID3HeaderSize) {
-    const uint8_t *bytes = (const uint8_t *)[_mappedData bytes];
-
-    if (strncmp((const char *)bytes, "ID3", 3) == 0) {
-      memcpy(_id3Header, bytes, kID3HeaderSize);
-      _id3BodySize = (uint32_t)_id3Header[6] << 21 |
-                     (uint32_t)_id3Header[7] << 14 |
-                     (uint32_t)_id3Header[8] <<  7 |
-                     (uint32_t)_id3Header[9];
-
-      if (_id3Header[3] == 0x03 && _id3Header[4] == 0x00) {
-        _headerFormat = DOUAudioRemoteFileID3v2HeaderFormat;
-        return [self _checkReadyID3v2];
-      }
-      else if (_id3Header[3] == 0x04 && _id3Header[4] == 0x00) {
-        _headerFormat = DOUAudioRemoteFileID3v3HeaderFormat;
-        return [self _checkReadyID3v3];
-      }
-    }
-
-    _headerFormat = DOUAudioRemoteFileDefaultHeaderFormat;
-    return [self _checkReadyDefault];
-  }
-
-  return NO;
-}
-
-- (BOOL)isReady
-{
-  if (_expectedLength > 0) {
-    return [self _checkReady];
-  }
-
-  return NO;
-}
-
-- (BOOL)isFinished
-{
-  return _receivedLength >= _expectedLength;
 }
 
 @end
