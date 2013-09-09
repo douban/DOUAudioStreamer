@@ -143,11 +143,26 @@ typedef NS_ENUM(uint64_t, event_type) {
   }
 }
 
-- (void)_handleAudioRouteChangeWithReason:(SInt32)reason
+- (void)_handleAudioRouteChangeWithDictionary:(NSDictionary *)routeChangeDictionary
 {
-  if (reason == kAudioSessionRouteChangeReason_OldDeviceUnavailable) {
-    [self _sendEvent:event_old_device_unavailable];
+  NSUInteger reason = [[routeChangeDictionary objectForKey:(__bridge NSString *)kAudioSession_RouteChangeKey_Reason] unsignedIntegerValue];
+  if (reason != kAudioSessionRouteChangeReason_OldDeviceUnavailable) {
+    return;
   }
+
+  NSDictionary *previousRouteDescription = [routeChangeDictionary objectForKey:(__bridge NSString *)kAudioSession_AudioRouteChangeKey_PreviousRouteDescription];
+  NSArray *previousOutputRoutes = [previousRouteDescription objectForKey:(__bridge NSString *)kAudioSession_AudioRouteKey_Outputs];
+  if ([previousOutputRoutes count] == 0) {
+    return;
+  }
+
+  NSString *previousOutputRouteType = [[previousOutputRoutes objectAtIndex:0] objectForKey:(__bridge NSString *)kAudioSession_AudioRouteKey_Type];
+  if (previousOutputRouteType == nil ||
+      ![previousOutputRouteType isEqualToString:(__bridge NSString *)kAudioSessionOutputRoute_Headphones]) {
+    return;
+  }
+
+  [self _sendEvent:event_old_device_unavailable];
 }
 
 static void audio_session_interruption_listener(void *inClientData, UInt32 inInterruptionState)
@@ -165,15 +180,8 @@ static void audio_route_change_listener(void *inClientData,
     return;
   }
 
-  CFDictionaryRef routeChangeDictionary = (CFDictionaryRef)inData;
-  CFNumberRef routeChangeReasonRef = CFDictionaryGetValue(routeChangeDictionary,
-                                                          CFSTR(kAudioSession_AudioRouteChangeKey_Reason));
-
-  SInt32 routeChangeReason;
-  CFNumberGetValue(routeChangeReasonRef, kCFNumberSInt32Type, &routeChangeReason);
-
   __unsafe_unretained DOUAudioEventLoop *eventLoop = (__bridge DOUAudioEventLoop *)inClientData;
-  [eventLoop _handleAudioRouteChangeWithReason:routeChangeReason];
+  [eventLoop _handleAudioRouteChangeWithDictionary:(__bridge NSDictionary *)inData];
 }
 
 - (void)_setupAudioSession
