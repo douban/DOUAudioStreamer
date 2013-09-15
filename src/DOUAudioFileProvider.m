@@ -61,6 +61,7 @@ static BOOL gLastProviderIsFinished = NO;
   CC_SHA256_CTX *_sha256Ctx;
 
   AudioFileStreamID _audioFileStreamID;
+  BOOL _requiresCompleteFile;
   BOOL _readyToProducePackets;
   BOOL _requestCompleted;
 }
@@ -155,7 +156,6 @@ static BOOL gLastProviderIsFinished = NO;
 
 @implementation _DOUAudioRemoteFileProvider
 
-@synthesize ready = _readyToProducePackets;
 @synthesize finished = _requestCompleted;
 
 - (instancetype)_initWithAudioFile:(id <DOUAudioFile>)audioFile
@@ -294,7 +294,7 @@ static BOOL gLastProviderIsFinished = NO;
     CC_SHA256_Update(_sha256Ctx, [data bytes], (CC_LONG)[data length]);
   }
 
-  if (!_readyToProducePackets && !_failed) {
+  if (!_readyToProducePackets && !_failed && !_requiresCompleteFile) {
     OSStatus status = kAudioFileStreamError_UnsupportedFileType;
 
     if (_audioFileStreamID != NULL) {
@@ -304,7 +304,7 @@ static BOOL gLastProviderIsFinished = NO;
                                          0);
     }
 
-    if (status != noErr) {
+    if (status != noErr && status != kAudioFileStreamError_NotOptimized) {
       NSArray *fallbackTypeIDs = [self _fallbackTypeIDs];
       for (NSNumber *typeIDNumber in fallbackTypeIDs) {
         AudioFileTypeID typeID = (AudioFileTypeID)[typeIDNumber unsignedLongValue];
@@ -317,15 +317,20 @@ static BOOL gLastProviderIsFinished = NO;
                                              [_mappedData bytes],
                                              0);
 
-          if (status == noErr) {
+          if (status == noErr || status == kAudioFileStreamError_NotOptimized) {
             break;
           }
         }
       }
 
-      if (status != noErr) {
+      if (status != noErr && status != kAudioFileStreamError_NotOptimized) {
         _failed = YES;
       }
+    }
+
+    if (status == kAudioFileStreamError_NotOptimized) {
+      [self _closeAudioFileStream];
+      _requiresCompleteFile = YES;
     }
   }
 }
@@ -489,6 +494,15 @@ static void audio_file_stream_packets_proc(void *inClientData,
 - (NSUInteger)downloadSpeed
 {
   return [_request downloadSpeed];
+}
+
+- (BOOL)isReady
+{
+  if (!_requiresCompleteFile) {
+    return _readyToProducePackets;
+  }
+
+  return _requestCompleted;
 }
 
 @end
