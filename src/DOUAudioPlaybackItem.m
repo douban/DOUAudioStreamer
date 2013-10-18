@@ -288,7 +288,7 @@ static SInt64 audio_file_get_size(void *inClientData)
   if (status != noErr) {
     return NO;
   }
-  _dataOffset = dataOffset;
+  _dataOffset = (NSUInteger)dataOffset;
 
   Float64 estimatedDuration = 0.0;
   size = sizeof(estimatedDuration);
