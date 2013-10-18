@@ -145,6 +145,9 @@ typedef NS_ENUM(uint64_t, event_type) {
 
 - (void)_handleAudioRouteChangeWithDictionary:(NSDictionary *)routeChangeDictionary
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
+
   NSUInteger reason = [[routeChangeDictionary objectForKey:(__bridge NSString *)kAudioSession_RouteChangeKey_Reason] unsignedIntegerValue];
   if (reason != kAudioSessionRouteChangeReason_OldDeviceUnavailable) {
     return;
@@ -161,6 +164,8 @@ typedef NS_ENUM(uint64_t, event_type) {
       ![previousOutputRouteType isEqualToString:(__bridge NSString *)kAudioSessionOutputRoute_Headphones]) {
     return;
   }
+
+#pragma clang diagnostic pop
 
   [self _sendEvent:event_old_device_unavailable];
 }
@@ -186,6 +191,9 @@ static void audio_route_change_listener(void *inClientData,
 
 - (void)_setupAudioSession
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
+
   AudioSessionInitialize(NULL, NULL, audio_session_interruption_listener, (__bridge void *)self);
 
   UInt32 audioCategory = kAudioSessionCategory_MediaPlayback;
@@ -194,6 +202,8 @@ static void audio_route_change_listener(void *inClientData,
   AudioSessionAddPropertyListener(kAudioSessionProperty_AudioRouteChange, audio_route_change_listener, (__bridge void *)self);
 
   AudioSessionSetActive(TRUE);
+
+#pragma clang diagnostic pop
 }
 
 #endif /* TARGET_OS_IPHONE */
@@ -334,7 +344,10 @@ static void audio_route_change_listener(void *inClientData,
     }
   }
   else if (event == event_interruption_end) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
     AudioSessionSetActive(TRUE);
+#pragma clang diagnostic pop
     [_renderer setInterrupted:NO];
 
     if (*streamer != nil &&
