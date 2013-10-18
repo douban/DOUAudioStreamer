@@ -263,10 +263,10 @@
       vertices[i * 4 * 2 + 3 * 2 + 1] = CGRectGetMaxY(rect);
     }
 
-    indices[i * 4 + 0] = i * 4 + 0;
-    indices[i * 4 + 1] = i * 4 + 1;
-    indices[i * 4 + 2] = i * 4 + 2;
-    indices[i * 4 + 3] = i * 4 + 3;
+    indices[i * 4 + 0] = (GLuint)i * 4 + 0;
+    indices[i * 4 + 1] = (GLuint)i * 4 + 1;
+    indices[i * 4 + 2] = (GLuint)i * 4 + 2;
+    indices[i * 4 + 3] = (GLuint)i * 4 + 3;
   }
 
   glBindBuffer(GL_ARRAY_BUFFER, _vbo);
@@ -305,7 +305,7 @@
   CGFloat height = CGRectGetHeight([self bounds]);
   CGFloat scale = [[UIScreen mainScreen] scale];
 
-  glViewport(0, 0, lrint(width * scale), lrint(height * scale));
+  glViewport(0, 0, (GLsizei)lrint(width * scale), (GLsizei)lrint(height * scale));
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -336,7 +336,7 @@
     glVertexPointer(2, GL_FLOAT, 0, NULL);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ibo);
-    glDrawElements(GL_TRIANGLE_STRIP, verticalCount * 4, GL_UNSIGNED_INT, NULL);
+    glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)verticalCount * 4, GL_UNSIGNED_INT, NULL);
 
     glPopMatrix();
   }
