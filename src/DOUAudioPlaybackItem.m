@@ -67,17 +67,34 @@ static OSStatus audio_file_read(void *inClientData,
                                 UInt32 *actualCount)
 {
   __unsafe_unretained DOUAudioPlaybackItem *item = (__bridge DOUAudioPlaybackItem *)inClientData;
+
+  if (inPosition + requestCount > [[item mappedData] length]) {
+    if (inPosition >= [[item mappedData] length]) {
+      *actualCount = 0;
+    }
+    else {
+      *actualCount = (UInt32)([[item mappedData] length] - inPosition);
+    }
+  }
+  else {
+    *actualCount = requestCount;
+  }
+
+  if (*actualCount == 0) {
+    return noErr;
+  }
+
   if ([item filePreprocessor] == nil) {
-    memcpy(buffer, (uint8_t *)[[item mappedData] bytes] + inPosition, requestCount);
+    memcpy(buffer, (uint8_t *)[[item mappedData] bytes] + inPosition, *actualCount);
   }
   else {
     NSData *input = [NSData dataWithBytesNoCopy:(uint8_t *)[[item mappedData] bytes] + inPosition
-                                         length:requestCount
+                                         length:*actualCount
                                    freeWhenDone:NO];
     NSData *output = [[item filePreprocessor] handleData:input offset:inPosition];
     memcpy(buffer, [output bytes], [output length]);
   }
-  *actualCount = requestCount;
+
   return noErr;
 }
 
