@@ -217,7 +217,7 @@ typedef struct {
       _decodingContext.decodeValidFrames = (SInt64)(actualToBaseSampleRateRatio * srcRatio * srcPti.mNumberValidFrames + 0.5);
 
       AudioConverterPrimeInfo primeInfo;
-      primeInfo.leadingFrames = (SInt32)(srcPti.mPrimingFrames * actualToBaseSampleRateRatio + 0.5);
+      primeInfo.leadingFrames = (UInt32)(srcPti.mPrimingFrames * actualToBaseSampleRateRatio + 0.5);
       primeInfo.trailingFrames = 0;
 
       status = AudioConverterSetProperty(_audioConverter, kAudioConverterPrimeInfo, sizeof(primeInfo), &primeInfo);
@@ -345,7 +345,7 @@ static OSStatus decoder_data_proc(AudioConverterRef inAudioConverter, UInt32 *io
   if (![provider isFinished]) {
     NSUInteger dataOffset = [_playbackItem dataOffset];
     NSUInteger expectedDataLength = [provider expectedLength];
-    NSInteger receivedDataLength  = (NSInteger)[provider receivedLength] - dataOffset;
+    NSInteger receivedDataLength  = (NSInteger)([provider receivedLength] - dataOffset);
 
     SInt64 packetNumber = _decodingContext.afio.pos + _decodingContext.afio.numPacketsPerRead;
     SInt64 packetDataOffset = packetNumber * _decodingContext.afio.srcSizePerPacket;
@@ -358,7 +358,7 @@ static OSStatus decoder_data_proc(AudioConverterRef inAudioConverter, UInt32 *io
     double intervalPerRead = intervalPerPacket / bytesPerPacket * bytesPerRead;
 
     double downloadTime = 1000.0 * (bytesPerRead - (receivedDataLength - packetDataOffset)) / [provider downloadSpeed];
-    SInt64 bytesRemaining = expectedDataLength - receivedDataLength;
+    SInt64 bytesRemaining = expectedDataLength - (NSUInteger)receivedDataLength;
 
     if (receivedDataLength < packetDataOffset ||
         (bytesRemaining > 0 &&
@@ -393,9 +393,9 @@ static OSStatus decoder_data_proc(AudioConverterRef inAudioConverter, UInt32 *io
       frame1 > _decodingContext.decodeValidFrames) {
     SInt64 framesToTrim64 = frame1 - _decodingContext.decodeValidFrames;
     UInt32 framesToTrim = (framesToTrim64 > ioOutputDataPackets) ? ioOutputDataPackets : (UInt32)framesToTrim64;
-    int bytesToTrim = framesToTrim * _decodingContext.outputFormat.mBytesPerFrame;
+    int bytesToTrim = (int)(framesToTrim * _decodingContext.outputFormat.mBytesPerFrame);
 
-    fillBufList.mBuffers[0].mDataByteSize -= bytesToTrim;
+    fillBufList.mBuffers[0].mDataByteSize -= (unsigned long)bytesToTrim;
     ioOutputDataPackets -= framesToTrim;
 
     if (ioOutputDataPackets == 0) {
@@ -423,7 +423,7 @@ static OSStatus decoder_data_proc(AudioConverterRef inAudioConverter, UInt32 *io
 
   double frames = (double)milliseconds * _decodingContext.inputFormat.mSampleRate / 1000.0;
   double packets = frames / _decodingContext.inputFormat.mFramesPerPacket;
-  NSUInteger packetNumebr = lrint(floor(packets));
+  NSUInteger packetNumebr = (NSUInteger)lrint(floor(packets));
 
   _decodingContext.afio.pos = packetNumebr;
   _decodingContext.outputPos = packetNumebr * _decodingContext.inputFormat.mFramesPerPacket / _decodingContext.outputFormat.mFramesPerPacket;

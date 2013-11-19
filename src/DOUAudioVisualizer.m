@@ -216,7 +216,7 @@
   _bar.verticalPadding = kBarVerticalPadding;
 
   _bar.horizontalCount = kDOUAudioAnalyzerLevelCount;
-  _bar.verticalCount = lrint(floor(height / kBarHeight));
+  _bar.verticalCount = (NSUInteger)lrint(floor(height / kBarHeight));
 }
 
 - (void)_updateVBO
@@ -270,10 +270,10 @@
   }
 
   glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * verticesCount, vertices, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)(sizeof(GLfloat) * verticesCount), vertices, GL_STATIC_DRAW);
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ibo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indicesCount, indices, GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, (GLsizeiptr)(sizeof(GLuint) * indicesCount), indices, GL_STATIC_DRAW);
 
   free(vertices);
   free(indices);
@@ -327,7 +327,7 @@
 
   glEnableClientState(GL_VERTEX_ARRAY);
   for (NSUInteger i = 0; i < _bar.horizontalCount; ++i) {
-    NSUInteger verticalCount = lroundf(_levels.pacing[i] * _bar.verticalCount);
+    NSUInteger verticalCount = (NSUInteger)lroundf(_levels.pacing[i] * _bar.verticalCount);
 
     glPushMatrix();
     glTranslatef(_bar.width * i, 0.0f, 0.0f);

@@ -257,7 +257,7 @@ static CFRunLoopRef controller_get_runloop()
     return;
   }
 
-  _responseContentLength = [string integerValue];
+  _responseContentLength = (NSUInteger)[string integerValue];
 }
 
 - (void)_readResponseHeaders
@@ -342,7 +342,7 @@ static CFRunLoopRef controller_get_runloop()
   }
 
   if (bytesRead > 0) {
-    NSData *data = [NSData dataWithBytesNoCopy:buffer length:bytesRead freeWhenDone:NO];
+    NSData *data = [NSData dataWithBytesNoCopy:buffer length:(NSUInteger)bytesRead freeWhenDone:NO];
 
     @synchronized(self) {
       if (_didReceiveDataBlock == NULL) {
@@ -357,7 +357,7 @@ static CFRunLoopRef controller_get_runloop()
       }
     }
 
-    _receivedLength += bytesRead;
+    _receivedLength += (unsigned long)bytesRead;
     [self _updateProgress];
     [self _updateDownloadSpeed];
   }

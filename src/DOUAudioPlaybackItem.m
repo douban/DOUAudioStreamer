@@ -91,7 +91,7 @@ static OSStatus audio_file_read(void *inClientData,
     NSData *input = [NSData dataWithBytesNoCopy:(uint8_t *)[[item mappedData] bytes] + inPosition
                                          length:*actualCount
                                    freeWhenDone:NO];
-    NSData *output = [[item filePreprocessor] handleData:input offset:inPosition];
+    NSData *output = [[item filePreprocessor] handleData:input offset:(NSUInteger)inPosition];
     memcpy(buffer, [output bytes], [output length]);
   }
 

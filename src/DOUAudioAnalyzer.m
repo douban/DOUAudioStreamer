@@ -138,7 +138,7 @@
 - (void)setInterval:(NSTimeInterval)interval
 {
   pthread_mutex_lock(&_mutex);
-  _interval = llrint(round(interval / [[self class] _absoluteTimeConversion]));
+  _interval = (uint64_t)llrint(round(interval / [[self class] _absoluteTimeConversion]));
   pthread_mutex_unlock(&_mutex);
 }
 

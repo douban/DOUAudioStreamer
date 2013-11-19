@@ -39,7 +39,7 @@
 {
   self = [super init];
   if (self) {
-    _log2Count = lrintf(log2f(kDOUAudioAnalyzerCount));
+    _log2Count = (size_t)lrintf(log2f(kDOUAudioAnalyzerCount));
     vDSP_hamm_window(_hammingWindow, kDOUAudioAnalyzerCount, 0);
 
     _complexSplit.realp = _complexSplitBuffer.real;

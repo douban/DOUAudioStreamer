@@ -41,7 +41,7 @@ static void mmap_deallocate(void *ptr, void *info)
     [sizeMap removeObjectForKey:key];
   }
 
-  size_t size = [fileSize unsignedLongLongValue];
+  size_t size = (size_t)[fileSize unsignedLongLongValue];
   munmap(ptr, size);
 }
 
@@ -111,18 +111,18 @@ static CFAllocatorRef get_mmap_deallocator()
     protection |= PROT_WRITE;
   }
 
-  void *address = mmap(NULL, size, protection, MAP_FILE | MAP_SHARED, fd, 0);
+  void *address = mmap(NULL, (size_t)size, protection, MAP_FILE | MAP_SHARED, fd, 0);
   if (address == MAP_FAILED) {
     return nil;
   }
 
   NSMutableDictionary *sizeMap = get_size_map();
   @synchronized(sizeMap) {
-    [sizeMap setObject:[NSNumber numberWithUnsignedLongLong:size]
+    [sizeMap setObject:[NSNumber numberWithUnsignedLongLong:(unsigned long long)size]
                 forKey:[NSNumber numberWithUnsignedLongLong:(uintptr_t)address]];
   }
 
-  return CFBridgingRelease(CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, (const UInt8 *)address, size, get_mmap_deallocator()));
+  return CFBridgingRelease(CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, (const UInt8 *)address, (CFIndex)size, get_mmap_deallocator()));
 }
 
 - (void)synchronizeMappedFile
@@ -139,7 +139,7 @@ static CFAllocatorRef get_mmap_deallocator()
     return;
   }
 
-  size_t size = [fileSize unsignedLongLongValue];
+  size_t size = (size_t)[fileSize unsignedLongLongValue];
   msync((void *)[self bytes], size, MS_SYNC | MS_INVALIDATE);
 }
 
