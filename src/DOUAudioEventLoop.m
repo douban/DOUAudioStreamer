@@ -139,7 +139,19 @@ typedef NS_ENUM(uint64_t, event_type) {
     [self _sendEvent:event_interruption_begin];
   }
   else if (state == kAudioSessionEndInterruption) {
-    [self _sendEvent:event_interruption_end];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
+    AudioSessionInterruptionType interruptionType = kAudioSessionInterruptionType_ShouldNotResume;
+    UInt32 interruptionTypeSize = sizeof(interruptionType);
+    OSStatus status;
+    status = AudioSessionGetProperty(kAudioSessionProperty_InterruptionType,
+                                     &interruptionTypeSize,
+                                     &interruptionType);
+    assert(status == noErr);
+#pragma clang diagnostic pop
+
+    [self _sendEvent:event_interruption_end
+            userData:(void *)(uintptr_t)interruptionType];
   }
 }
 
@@ -344,17 +356,25 @@ static void audio_route_change_listener(void *inClientData,
     }
   }
   else if (event == event_interruption_end) {
+    const AudioSessionInterruptionType interruptionType = (AudioSessionInterruptionType)(uintptr_t)_lastKQUserData;
+    assert(interruptionType == kAudioSessionInterruptionType_ShouldResume ||
+           interruptionType == kAudioSessionInterruptionType_ShouldNotResume);
+
+    if (interruptionType == kAudioSessionInterruptionType_ShouldResume) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated"
-    AudioSessionSetActive(TRUE);
+      OSStatus status;
+      status = AudioSessionSetActive(TRUE);
+      assert(status == noErr);
 #pragma clang diagnostic pop
-    [_renderer setInterrupted:NO];
+      [_renderer setInterrupted:NO];
 
-    if (*streamer != nil &&
-        [*streamer status] == DOUAudioStreamerPaused &&
-        [*streamer isPausedByInterruption]) {
-      [*streamer setPausedByInterruption:NO];
-      [self performSelector:@selector(play) onThread:[NSThread mainThread] withObject:nil waitUntilDone:NO];
+      if (*streamer != nil &&
+          [*streamer status] == DOUAudioStreamerPaused &&
+          [*streamer isPausedByInterruption]) {
+        [*streamer setPausedByInterruption:NO];
+        [self performSelector:@selector(play) onThread:[NSThread mainThread] withObject:nil waitUntilDone:NO];
+      }
     }
   }
   else if (event == event_old_device_unavailable) {
