@@ -379,6 +379,7 @@ static OSStatus decoder_data_proc(AudioConverterRef inAudioConverter, UInt32 *io
   UInt32 ioOutputDataPackets = _decodingContext.numOutputPackets;
   status = AudioConverterFillComplexBuffer(_audioConverter, decoder_data_proc, &_decodingContext.afio, &ioOutputDataPackets, &fillBufList, _decodingContext.outputPktDescs);
   if (status != noErr) {
+    pthread_mutex_unlock(&_decodingContext.mutex);
     return DOUAudioDecoderFailed;
   }
 
