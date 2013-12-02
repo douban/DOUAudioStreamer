@@ -436,11 +436,10 @@ static void response_stream_client_callback(CFReadStreamRef stream, CFStreamEven
     return;
   }
 
-  [self _closeResponseStream];
-
   __block CFTypeRef __request = CFBridgingRetain(self);
   CFRunLoopPerformBlock(controller_get_runloop(), kCFRunLoopDefaultMode, ^{
     @autoreleasepool {
+      [(__bridge DOUSimpleHTTPRequest *)__request _closeResponseStream];
       CFBridgingRelease(__request);
     }
   });
