@@ -147,7 +147,7 @@ typedef NS_ENUM(uint64_t, event_type) {
     status = AudioSessionGetProperty(kAudioSessionProperty_InterruptionType,
                                      &interruptionTypeSize,
                                      &interruptionType);
-    assert(status == noErr);
+    NSAssert(status == noErr, @"failed to get interruption type");
 #pragma clang diagnostic pop
 
     [self _sendEvent:event_interruption_end
@@ -357,15 +357,16 @@ static void audio_route_change_listener(void *inClientData,
   }
   else if (event == event_interruption_end) {
     const AudioSessionInterruptionType interruptionType = (AudioSessionInterruptionType)(uintptr_t)_lastKQUserData;
-    assert(interruptionType == kAudioSessionInterruptionType_ShouldResume ||
-           interruptionType == kAudioSessionInterruptionType_ShouldNotResume);
+    NSAssert(interruptionType == kAudioSessionInterruptionType_ShouldResume ||
+             interruptionType == kAudioSessionInterruptionType_ShouldNotResume,
+             @"invalid interruption type");
 
     if (interruptionType == kAudioSessionInterruptionType_ShouldResume) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated"
       OSStatus status;
       status = AudioSessionSetActive(TRUE);
-      assert(status == noErr);
+      NSAssert(status == noErr, @"failed to activate audio session");
 #pragma clang diagnostic pop
       [_renderer setInterrupted:NO];
 
