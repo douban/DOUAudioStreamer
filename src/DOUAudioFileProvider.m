@@ -4,7 +4,7 @@
  *
  *      https://github.com/douban/DOUAudioStreamer
  *
- *  Copyright 2013 Douban Inc.  All rights reserved.
+ *  Copyright 2013-2014 Douban Inc.  All rights reserved.
  *
  *  Use and distribution licensed under the BSD license.  See
  *  the LICENSE file for full text.
@@ -25,6 +25,10 @@
 #include <MobileCoreServices/MobileCoreServices.h>
 #else /* TARGET_OS_IPHONE */
 #include <CoreServices/CoreServices.h>
+#endif /* TARGET_OS_IPHONE */
+
+#if TARGET_OS_IPHONE
+#import "DOUMPMediaLibraryAssetLoader.h"
 #endif /* TARGET_OS_IPHONE */
 
 static id <DOUAudioFile> gHintFile = nil;
@@ -66,6 +70,15 @@ static BOOL gLastProviderIsFinished = NO;
   BOOL _requestCompleted;
 }
 @end
+
+#if TARGET_OS_IPHONE
+@interface _DOUAudioMediaLibraryFileProvider : DOUAudioFileProvider {
+@private
+  DOUMPMediaLibraryAssetLoader *_assetLoader;
+  BOOL _loaderCompleted;
+}
+@end
+#endif /* TARGET_OS_IPHONE */
 
 #pragma mark - Concrete Audio Local File Provider
 
@@ -507,6 +520,110 @@ static void audio_file_stream_packets_proc(void *inClientData,
 
 @end
 
+#pragma mark - Concrete Audio Media Library File Provider
+
+#if TARGET_OS_IPHONE
+@implementation _DOUAudioMediaLibraryFileProvider
+
+- (instancetype)_initWithAudioFile:(id <DOUAudioFile>)audioFile
+{
+  self = [super _initWithAudioFile:audioFile];
+  if (self) {
+    [self _createAssetLoader];
+    [_assetLoader start];
+  }
+
+  return self;
+}
+
+- (void)dealloc
+{
+  @synchronized(_assetLoader) {
+    [_assetLoader setCompletedBlock:NULL];
+    [_assetLoader cancel];
+  }
+
+  [[NSFileManager defaultManager] removeItemAtPath:[_assetLoader cachedPath]
+                                             error:NULL];
+}
+
+- (void)_invokeEventBlock
+{
+  if (_eventBlock != NULL) {
+    _eventBlock();
+  }
+}
+
+- (void)_assetLoaderDidComplete
+{
+  if ([_assetLoader isFailed]) {
+    _failed = YES;
+    [self _invokeEventBlock];
+    return;
+  }
+
+  _mimeType = [_assetLoader mimeType];
+  _fileExtension = [_assetLoader fileExtension];
+
+  _cachedPath = [_assetLoader cachedPath];
+  _cachedURL = [NSURL fileURLWithPath:_cachedPath];
+
+  _mappedData = [NSData dataWithMappedContentsOfFile:_cachedPath];
+  _expectedLength = [_mappedData length];
+  _receivedLength = [_mappedData length];
+
+  _loaderCompleted = YES;
+  [self _invokeEventBlock];
+}
+
+- (void)_createAssetLoader
+{
+  _assetLoader = [DOUMPMediaLibraryAssetLoader loaderWithURL:[_audioFile audioFileURL]];
+
+  __weak typeof(self) weakSelf = self;
+  [_assetLoader setCompletedBlock:^{
+    __strong typeof(weakSelf) strongSelf = weakSelf;
+    [strongSelf _assetLoaderDidComplete];
+  }];
+}
+
+- (NSString *)sha256
+{
+  if (_sha256 == nil &&
+      [DOUAudioStreamer options] & DOUAudioStreamerRequireSHA256 &&
+      [self mappedData] != nil) {
+    unsigned char hash[CC_SHA256_DIGEST_LENGTH];
+    CC_SHA256([[self mappedData] bytes], (CC_LONG)[[self mappedData] length], hash);
+
+    NSMutableString *result = [NSMutableString stringWithCapacity:CC_SHA256_DIGEST_LENGTH * 2];
+    for (size_t i = 0; i < CC_SHA256_DIGEST_LENGTH; ++i) {
+      [result appendFormat:@"%02x", hash[i]];
+    }
+
+    _sha256 = [result copy];
+  }
+
+  return _sha256;
+}
+
+- (NSUInteger)downloadSpeed
+{
+  return _receivedLength;
+}
+
+- (BOOL)isReady
+{
+  return _loaderCompleted;
+}
+
+- (BOOL)isFinished
+{
+  return _loaderCompleted;
+}
+
+@end
+#endif /* TARGET_OS_IPHONE */
+
 #pragma mark - Abstract Audio File Provider
 
 @implementation DOUAudioFileProvider
@@ -537,6 +654,11 @@ static void audio_file_stream_packets_proc(void *inClientData,
   if ([audioFileURL isFileURL]) {
     return [[_DOUAudioLocalFileProvider alloc] _initWithAudioFile:audioFile];
   }
+#if TARGET_OS_IPHONE
+  else if ([[audioFileURL scheme] isEqualToString:@"ipod-library"]) {
+    return [[_DOUAudioMediaLibraryFileProvider alloc] _initWithAudioFile:audioFile];
+  }
+#endif /* TARGET_OS_IPHONE */
   else {
     return [[_DOUAudioRemoteFileProvider alloc] _initWithAudioFile:audioFile];
   }
@@ -578,6 +700,9 @@ static void audio_file_stream_packets_proc(void *inClientData,
 
   NSURL *audioFileURL = [audioFile audioFileURL];
   if (audioFileURL == nil ||
+#if TARGET_OS_IPHONE
+      [[audioFileURL scheme] isEqualToString:@"ipod-library"] ||
+#endif /* TARGET_OS_IPHONE */
       [audioFileURL isFileURL]) {
     return;
   }
