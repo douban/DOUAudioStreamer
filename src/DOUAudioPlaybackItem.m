@@ -73,7 +73,7 @@ static OSStatus audio_file_read(void *inClientData,
       *actualCount = 0;
     }
     else {
-      *actualCount = (UInt32)([[item mappedData] length] - inPosition);
+      *actualCount = (UInt32)((SInt64)[[item mappedData] length] - inPosition);
     }
   }
   else {
@@ -101,7 +101,7 @@ static OSStatus audio_file_read(void *inClientData,
 static SInt64 audio_file_get_size(void *inClientData)
 {
   __unsafe_unretained DOUAudioPlaybackItem *item = (__bridge DOUAudioPlaybackItem *)inClientData;
-  return [[item mappedData] length];
+  return (SInt64)[[item mappedData] length];
 }
 
 - (BOOL)_openWithFileTypeHint:(AudioFileTypeID)fileTypeHint
