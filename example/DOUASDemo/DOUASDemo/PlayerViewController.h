@@ -16,8 +16,8 @@
 
 #import <UIKit/UIKit.h>
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
+@interface PlayerViewController : UIViewController
 
-@property (nonatomic, strong) UIWindow *window;
+@property (nonatomic, copy) NSArray *tracks;
 
 @end

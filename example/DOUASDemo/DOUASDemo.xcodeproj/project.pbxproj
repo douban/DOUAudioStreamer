@@ -25,6 +25,7 @@
 		D43AFF97176A938100D1FECF /* DOUAudioVisualizer.m in Sources */ = {isa = PBXBuildFile; fileRef = D43AFF92176A938100D1FECF /* DOUAudioVisualizer.m */; };
 		D43AFF98176A938100D1FECF /* DOUEAGL1View.m in Sources */ = {isa = PBXBuildFile; fileRef = D43AFF94176A938100D1FECF /* DOUEAGL1View.m */; };
 		D43AFF99176A938100D1FECF /* DOUEAGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = D43AFF96176A938100D1FECF /* DOUEAGLView.m */; };
+		D44920A018A5D12000651CD2 /* DOUMPMediaLibraryAssetLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = D449209F18A5D12000651CD2 /* DOUMPMediaLibraryAssetLoader.m */; };
 		D4632A6F17AE27E30065ECDE /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4632A6E17AE27E30065ECDE /* MobileCoreServices.framework */; };
 		D47CA3A217680ADA002D73B4 /* DOUAudioAnalyzer.m in Sources */ = {isa = PBXBuildFile; fileRef = D47CA3A117680ADA002D73B4 /* DOUAudioAnalyzer.m */; };
 		D47CA3A717680AF1002D73B4 /* DOUAudioFrequencyAnalyzer.m in Sources */ = {isa = PBXBuildFile; fileRef = D47CA3A417680AF1002D73B4 /* DOUAudioFrequencyAnalyzer.m */; };
@@ -38,11 +39,15 @@
 		D4C38935171B9D87009D6124 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = D4C38934171B9D87009D6124 /* Default.png */; };
 		D4C38937171B9D87009D6124 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D4C38936171B9D87009D6124 /* Default@2x.png */; };
 		D4C38939171B9D87009D6124 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D4C38938171B9D87009D6124 /* Default-568h@2x.png */; };
-		D4C3893C171B9D87009D6124 /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D4C3893A171B9D87009D6124 /* MainStoryboard.storyboard */; };
-		D4C3893F171B9D87009D6124 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D4C3893E171B9D87009D6124 /* ViewController.m */; };
 		D4C38948171B9E36009D6124 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4C38947171B9E36009D6124 /* AudioToolbox.framework */; };
 		D4C3894A171B9E3A009D6124 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4C38949171B9E3A009D6124 /* CoreAudio.framework */; };
 		D4C3894C171B9E3D009D6124 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4C3894B171B9E3D009D6124 /* CFNetwork.framework */; };
+		D4F5B28D18A5F0C70063865C /* Track.m in Sources */ = {isa = PBXBuildFile; fileRef = D4F5B28C18A5F0C70063865C /* Track.m */; };
+		D4F5B29018A5F1B70063865C /* Track+Provider.m in Sources */ = {isa = PBXBuildFile; fileRef = D4F5B28F18A5F1B70063865C /* Track+Provider.m */; };
+		D4F5B29318A5F3030063865C /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D4F5B29218A5F3030063865C /* MainViewController.m */; };
+		D4F5B29618A5F6B90063865C /* PlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D4F5B29518A5F6B90063865C /* PlayerViewController.m */; };
+		D4F5B29818A605A70063865C /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4F5B29718A605A70063865C /* AVFoundation.framework */; };
+		D4F5B29A18A605AB0063865C /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4F5B29918A605AB0063865C /* MediaPlayer.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -81,6 +86,8 @@
 		D43AFF94176A938100D1FECF /* DOUEAGL1View.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DOUEAGL1View.m; sourceTree = "<group>"; };
 		D43AFF95176A938100D1FECF /* DOUEAGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DOUEAGLView.h; sourceTree = "<group>"; };
 		D43AFF96176A938100D1FECF /* DOUEAGLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DOUEAGLView.m; sourceTree = "<group>"; };
+		D449209E18A5D12000651CD2 /* DOUMPMediaLibraryAssetLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DOUMPMediaLibraryAssetLoader.h; sourceTree = "<group>"; };
+		D449209F18A5D12000651CD2 /* DOUMPMediaLibraryAssetLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DOUMPMediaLibraryAssetLoader.m; sourceTree = "<group>"; };
 		D4632A6E17AE27E30065ECDE /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		D47CA39E17680AC5002D73B4 /* DOUAudioBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DOUAudioBase.h; sourceTree = "<group>"; };
 		D47CA39F17680ADA002D73B4 /* DOUAudioAnalyzer_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DOUAudioAnalyzer_Private.h; sourceTree = "<group>"; };
@@ -103,12 +110,19 @@
 		D4C38934171B9D87009D6124 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		D4C38936171B9D87009D6124 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		D4C38938171B9D87009D6124 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
-		D4C3893B171B9D87009D6124 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard.storyboard; sourceTree = "<group>"; };
-		D4C3893D171B9D87009D6124 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		D4C3893E171B9D87009D6124 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		D4C38947171B9E36009D6124 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		D4C38949171B9E3A009D6124 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		D4C3894B171B9E3D009D6124 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		D4F5B28B18A5F0C70063865C /* Track.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Track.h; sourceTree = "<group>"; };
+		D4F5B28C18A5F0C70063865C /* Track.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Track.m; sourceTree = "<group>"; };
+		D4F5B28E18A5F1B70063865C /* Track+Provider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Track+Provider.h"; sourceTree = "<group>"; };
+		D4F5B28F18A5F1B70063865C /* Track+Provider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Track+Provider.m"; sourceTree = "<group>"; };
+		D4F5B29118A5F3030063865C /* MainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainViewController.h; sourceTree = "<group>"; };
+		D4F5B29218A5F3030063865C /* MainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainViewController.m; sourceTree = "<group>"; };
+		D4F5B29418A5F6B90063865C /* PlayerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerViewController.h; sourceTree = "<group>"; };
+		D4F5B29518A5F6B90063865C /* PlayerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerViewController.m; sourceTree = "<group>"; };
+		D4F5B29718A605A70063865C /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		D4F5B29918A605AB0063865C /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -116,6 +130,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D4F5B29A18A605AB0063865C /* MediaPlayer.framework in Frameworks */,
+				D4F5B29818A605A70063865C /* AVFoundation.framework in Frameworks */,
 				D4632A6F17AE27E30065ECDE /* MobileCoreServices.framework in Frameworks */,
 				D42DA81217865EE9007276E5 /* OpenGLES.framework in Frameworks */,
 				D42DA81017865EE4007276E5 /* QuartzCore.framework in Frameworks */,
@@ -167,6 +183,8 @@
 				D47CA3A417680AF1002D73B4 /* DOUAudioFrequencyAnalyzer.m */,
 				D43ACD861738B47B00E6A571 /* DOUSimpleHTTPRequest.h */,
 				D43ACD871738B47B00E6A571 /* DOUSimpleHTTPRequest.m */,
+				D449209E18A5D12000651CD2 /* DOUMPMediaLibraryAssetLoader.h */,
+				D449209F18A5D12000651CD2 /* DOUMPMediaLibraryAssetLoader.m */,
 				D43ACD881738B47B00E6A571 /* NSData+DOUMappedFile.h */,
 				D43ACD891738B47B00E6A571 /* NSData+DOUMappedFile.m */,
 				D43AFF95176A938100D1FECF /* DOUEAGLView.h */,
@@ -200,6 +218,8 @@
 		D4C38921171B9D87009D6124 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D4F5B29918A605AB0063865C /* MediaPlayer.framework */,
+				D4F5B29718A605A70063865C /* AVFoundation.framework */,
 				D4632A6E17AE27E30065ECDE /* MobileCoreServices.framework */,
 				D42DA81117865EE9007276E5 /* OpenGLES.framework */,
 				D42DA80F17865EE4007276E5 /* QuartzCore.framework */,
@@ -220,9 +240,14 @@
 				D43ACD731738B47B00E6A571 /* DOUAudioStreamer */,
 				D4C38931171B9D87009D6124 /* AppDelegate.h */,
 				D4C38932171B9D87009D6124 /* AppDelegate.m */,
-				D4C3893A171B9D87009D6124 /* MainStoryboard.storyboard */,
-				D4C3893D171B9D87009D6124 /* ViewController.h */,
-				D4C3893E171B9D87009D6124 /* ViewController.m */,
+				D4F5B28B18A5F0C70063865C /* Track.h */,
+				D4F5B28C18A5F0C70063865C /* Track.m */,
+				D4F5B28E18A5F1B70063865C /* Track+Provider.h */,
+				D4F5B28F18A5F1B70063865C /* Track+Provider.m */,
+				D4F5B29118A5F3030063865C /* MainViewController.h */,
+				D4F5B29218A5F3030063865C /* MainViewController.m */,
+				D4F5B29418A5F6B90063865C /* PlayerViewController.h */,
+				D4F5B29518A5F6B90063865C /* PlayerViewController.m */,
 				D4C38929171B9D87009D6124 /* Supporting Files */,
 			);
 			path = DOUASDemo;
@@ -297,7 +322,6 @@
 				D4C38935171B9D87009D6124 /* Default.png in Resources */,
 				D4C38937171B9D87009D6124 /* Default@2x.png in Resources */,
 				D4C38939171B9D87009D6124 /* Default-568h@2x.png in Resources */,
-				D4C3893C171B9D87009D6124 /* MainStoryboard.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -314,21 +338,25 @@
 				D47CA3A817680AF1002D73B4 /* DOUAudioSpatialAnalyzer.m in Sources */,
 				D47CA3A217680ADA002D73B4 /* DOUAudioAnalyzer.m in Sources */,
 				D4C38933171B9D87009D6124 /* AppDelegate.m in Sources */,
-				D4C3893F171B9D87009D6124 /* ViewController.m in Sources */,
 				D43ACD8A1738B47B00E6A571 /* DOUAudioDecoder.m in Sources */,
 				D43AFF97176A938100D1FECF /* DOUAudioVisualizer.m in Sources */,
 				D43AFF99176A938100D1FECF /* DOUEAGLView.m in Sources */,
+				D44920A018A5D12000651CD2 /* DOUMPMediaLibraryAssetLoader.m in Sources */,
 				D43ACD8B1738B47B00E6A571 /* DOUAudioEventLoop.m in Sources */,
 				D43ACD8C1738B47B00E6A571 /* DOUAudioFilePreprocessor.m in Sources */,
 				D40A255D17694680000B98AA /* DOUAudioAnalyzer+Default.m in Sources */,
 				D43ACD8D1738B47B00E6A571 /* DOUAudioFileProvider.m in Sources */,
+				D4F5B29618A5F6B90063865C /* PlayerViewController.m in Sources */,
 				D43ACD8E1738B47B00E6A571 /* DOUAudioLPCM.m in Sources */,
 				D43ACD8F1738B47B00E6A571 /* DOUAudioPlaybackItem.m in Sources */,
 				D43ACD901738B47B00E6A571 /* DOUAudioRenderer.m in Sources */,
 				D43AFF98176A938100D1FECF /* DOUEAGL1View.m in Sources */,
 				D43ACD911738B47B00E6A571 /* DOUAudioStreamer.m in Sources */,
+				D4F5B29318A5F3030063865C /* MainViewController.m in Sources */,
 				D43ACD921738B47B00E6A571 /* DOUSimpleHTTPRequest.m in Sources */,
 				D43ACD931738B47B00E6A571 /* NSData+DOUMappedFile.m in Sources */,
+				D4F5B29018A5F1B70063865C /* Track+Provider.m in Sources */,
+				D4F5B28D18A5F0C70063865C /* Track.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -341,14 +369,6 @@
 				D4C3892C171B9D87009D6124 /* en */,
 			);
 			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
-		D4C3893A171B9D87009D6124 /* MainStoryboard.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				D4C3893B171B9D87009D6124 /* en */,
-			);
-			name = MainStoryboard.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

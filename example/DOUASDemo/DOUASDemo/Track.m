@@ -14,10 +14,8 @@
  *
  */
 
-#import <UIKit/UIKit.h>
+#import "Track.h"
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
-
-@property (nonatomic, strong) UIWindow *window;
+@implementation Track
 
 @end

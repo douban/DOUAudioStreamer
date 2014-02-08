@@ -14,10 +14,11 @@
  *
  */
 
-#import <UIKit/UIKit.h>
+#import "Track.h"
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
+@interface Track (Provider)
 
-@property (nonatomic, strong) UIWindow *window;
++ (NSArray *)remoteTracks;
++ (NSArray *)musicLibraryTracks;
 
 @end

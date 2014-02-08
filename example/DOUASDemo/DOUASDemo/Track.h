@@ -14,10 +14,13 @@
  *
  */
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
+#import "DOUAudioFile.h"
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
+@interface Track : NSObject <DOUAudioFile>
 
-@property (nonatomic, strong) UIWindow *window;
+@property (nonatomic, strong) NSString *artist;
+@property (nonatomic, strong) NSString *title;
+@property (nonatomic, strong) NSURL *audioFileURL;
 
 @end
