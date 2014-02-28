@@ -22,7 +22,7 @@ Pod::Spec.new do |s|
   s.source_files = 'src/*.{h,m}'
   s.requires_arc = true
 
-  s.ios.deployment_target = '4.3'
+  s.ios.deployment_target = '5.0'
   s.ios.frameworks = 'Accelerate', 'CFNetwork', 'CoreAudio', 'AudioToolbox', 'AVFoundation', 'QuartzCore', 'OpenGLES', 'MobileCoreServices'
 
   s.osx.deployment_target = '10.7'
