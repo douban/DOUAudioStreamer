@@ -3,7 +3,7 @@
 //  DOUASDemo
 //
 //  Created by Chongyu Zhu on 15/04/13.
-//  Copyright (c) 2013 Douban Inc. All rights reserved.
+//  Copyright (c) 2013-2014 Douban Inc. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>

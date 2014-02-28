@@ -4,7 +4,7 @@
 #
 #      https://github.com/douban/DOUAudioStreamer
 #
-#  Copyright 2013 Douban Inc.  All rights reserved.
+#  Copyright 2013-2014 Douban Inc.  All rights reserved.
 #
 #  Use and distribution licensed under the BSD license.  See
 #  the LICENSE file for full text.
