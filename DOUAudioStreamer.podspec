@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   #  the LICENSE file for full text.
   #
   #  Authors:
-  #      Chongyu Zhu <lembacon@gmail.com>
+  #      Chongyu Zhu <i@lembacon.com>
   #
 
   s.name = 'DOUAudioStreamer'
