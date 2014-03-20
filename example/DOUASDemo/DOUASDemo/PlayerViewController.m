@@ -126,19 +126,26 @@ static void *kBufferingRatioKVOKey = &kBufferingRatioKVOKey;
 {
   [self _cancelStreamer];
 
-  Track *track = [_tracks objectAtIndex:_currentTrackIndex];
-  NSString *title = [NSString stringWithFormat:@"%@ - %@", track.artist, track.title];
-  [_titleLabel setText:title];
-
-  _streamer = [DOUAudioStreamer streamerWithAudioFile:track];
-  [_streamer addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew context:kStatusKVOKey];
-  [_streamer addObserver:self forKeyPath:@"duration" options:NSKeyValueObservingOptionNew context:kDurationKVOKey];
-  [_streamer addObserver:self forKeyPath:@"bufferingRatio" options:NSKeyValueObservingOptionNew context:kBufferingRatioKVOKey];
-
-  [_streamer play];
-
-  [self _updateBufferingStatus];
-  [self _setupHintForStreamer];
+    if (0 == [_tracks count])
+    {
+        [_miscLabel setText:@"(No tracks available)"];
+    }
+    else
+    {
+        Track *track = [_tracks objectAtIndex:_currentTrackIndex];
+        NSString *title = [NSString stringWithFormat:@"%@ - %@", track.artist, track.title];
+        [_titleLabel setText:title];
+        
+        _streamer = [DOUAudioStreamer streamerWithAudioFile:track];
+        [_streamer addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew context:kStatusKVOKey];
+        [_streamer addObserver:self forKeyPath:@"duration" options:NSKeyValueObservingOptionNew context:kDurationKVOKey];
+        [_streamer addObserver:self forKeyPath:@"bufferingRatio" options:NSKeyValueObservingOptionNew context:kBufferingRatioKVOKey];
+        
+        [_streamer play];
+        
+        [self _updateBufferingStatus];
+        [self _setupHintForStreamer];
+    }
 }
 
 - (void)_setupHintForStreamer
