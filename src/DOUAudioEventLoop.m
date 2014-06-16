@@ -92,6 +92,11 @@ typedef NS_ENUM(uint64_t, event_type) {
     _kq = kqueue();
     pthread_mutex_init(&_mutex, NULL);
 
+#if TARGET_OS_IPHONE
+    // Audio session should be setup before `AudioComponentInstance` is initialized.
+    [self _setupAudioSession];
+#endif /* TARGET_OS_IPHONE */
+
     _renderer = [DOUAudioRenderer rendererWithBufferTime:kDOUAudioStreamerBufferTime];
     [_renderer setUp];
 
@@ -103,9 +108,7 @@ typedef NS_ENUM(uint64_t, event_type) {
     }
 
     _decoderBufferSize = [[self class] _decoderBufferSize];
-#if TARGET_OS_IPHONE
-    [self _setupAudioSession];
-#endif /* TARGET_OS_IPHONE */
+
     [self _setupFileProviderEventBlock];
     [self _enableEvents];
     [self _createThread];
