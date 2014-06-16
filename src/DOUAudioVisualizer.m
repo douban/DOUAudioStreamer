@@ -336,7 +336,7 @@
     glVertexPointer(2, GL_FLOAT, 0, NULL);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ibo);
-    glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)verticalCount * 4, GL_UNSIGNED_INT, NULL);
+    glDrawElements(GL_TRIANGLE_STRIP, (GLsizei)verticalCount * 4, GL_UNSIGNED_INT_OES, NULL);
 
     glPopMatrix();
   }

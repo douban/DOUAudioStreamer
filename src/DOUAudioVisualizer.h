@@ -16,14 +16,14 @@
 
 #if TARGET_OS_IPHONE
 
-#import "DOUEAGL1View.h"
+#import "DOUEAGLView.h"
 
 typedef NS_ENUM(NSUInteger, DOUAudioVisualizerInterpolationType) {
   DOUAudioVisualizerLinearInterpolation,
   DOUAudioVisualizerSmoothInterpolation
 };
 
-@interface DOUAudioVisualizer : DOUEAGL1View
+@interface DOUAudioVisualizer : DOUEAGLView
 
 @property (nonatomic, assign) NSUInteger stepCount;
 @property (nonatomic, assign) DOUAudioVisualizerInterpolationType interpolationType;

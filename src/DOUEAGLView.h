@@ -18,10 +18,10 @@
 
 #import <UIKit/UIKit.h>
 #import <OpenGLES/EAGL.h>
+#import <OpenGLES/ES1/gl.h>
+#import <OpenGLES/ES1/glext.h>
 
 @interface DOUEAGLView : UIView
-
-+ (EAGLRenderingAPI)eaglRenderingAPI;
 
 @property (nonatomic, getter = isPaused) BOOL paused;
 @property (nonatomic, assign) NSInteger frameInterval;

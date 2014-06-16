@@ -43,12 +43,6 @@
   return [CAEAGLLayer class];
 }
 
-+ (EAGLRenderingAPI)eaglRenderingAPI
-{
-  [self doesNotRecognizeSelector:_cmd];
-  return kEAGLRenderingAPIOpenGLES1;
-}
-
 - (id)initWithFrame:(CGRect)frame
 {
   self = [super initWithFrame:frame];
@@ -90,14 +84,14 @@
 
   [EAGLContext setCurrentContext:_context];
   [self cleanup];
-  glDeleteFramebuffers(1, &_framebuffer);
-  glDeleteRenderbuffers(1, &_renderbufferColor);
+  glDeleteFramebuffersOES(1, &_framebuffer);
+  glDeleteRenderbuffersOES(1, &_renderbufferColor);
   [EAGLContext setCurrentContext:nil];
 }
 
 - (void)_setupEAGLContextAndLayer
 {
-  _context = [[EAGLContext alloc] initWithAPI:[[self class] eaglRenderingAPI]];
+  _context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1];
 
   [EAGLContext setCurrentContext:_context];
   [self prepare];
@@ -113,16 +107,16 @@
 
 - (void)_setupFBO
 {
-  glGenFramebuffers(1, &_framebuffer);
-  glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
+  glGenFramebuffersOES(1, &_framebuffer);
+  glBindFramebufferOES(GL_FRAMEBUFFER_OES, _framebuffer);
 
-  glGenRenderbuffers(1, &_renderbufferColor);
-  glBindRenderbuffer(GL_RENDERBUFFER, _renderbufferColor);
+  glGenRenderbuffersOES(1, &_renderbufferColor);
+  glBindRenderbufferOES(GL_RENDERBUFFER_OES, _renderbufferColor);
 
-  [_context renderbufferStorage:GL_RENDERBUFFER fromDrawable:_eaglLayer];
-  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, _renderbufferColor);
+  [_context renderbufferStorage:GL_RENDERBUFFER_OES fromDrawable:_eaglLayer];
+  glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_RENDERBUFFER_OES, _renderbufferColor);
 
-  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+  if (glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES) != GL_FRAMEBUFFER_COMPLETE_OES) {
     abort();
   }
 }
@@ -131,8 +125,8 @@
 {
   [EAGLContext setCurrentContext:_context];
 
-  glBindRenderbuffer(GL_RENDERBUFFER, _renderbufferColor);
-  [_context renderbufferStorage:GL_RENDERBUFFER fromDrawable:_eaglLayer];
+  glBindRenderbufferOES(GL_RENDERBUFFER_OES, _renderbufferColor);
+  [_context renderbufferStorage:GL_RENDERBUFFER_OES fromDrawable:_eaglLayer];
 
   [self reshape];
 }
@@ -153,11 +147,11 @@
   @autoreleasepool {
     [EAGLContext setCurrentContext:_context];
 
-    glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
+    glBindFramebufferOES(GL_FRAMEBUFFER_OES, _framebuffer);
     [self render];
 
-    glBindRenderbuffer(GL_RENDERBUFFER, _renderbufferColor);
-    [_context presentRenderbuffer:GL_RENDERBUFFER];
+    glBindRenderbufferOES(GL_RENDERBUFFER_OES, _renderbufferColor);
+    [_context presentRenderbuffer:GL_RENDERBUFFER_OES];
   }
 }
 
