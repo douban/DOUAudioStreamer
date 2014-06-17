@@ -93,7 +93,6 @@ typedef NS_ENUM(uint64_t, event_type) {
     pthread_mutex_init(&_mutex, NULL);
 
 #if TARGET_OS_IPHONE
-    // Audio session should be setup before `AudioComponentInstance` is initialized.
     [self _setupAudioSession];
 #endif /* TARGET_OS_IPHONE */
 
@@ -108,7 +107,6 @@ typedef NS_ENUM(uint64_t, event_type) {
     }
 
     _decoderBufferSize = [[self class] _decoderBufferSize];
-
     [self _setupFileProviderEventBlock];
     [self _enableEvents];
     [self _createThread];
