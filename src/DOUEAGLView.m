@@ -128,6 +128,11 @@
   glBindRenderbufferOES(GL_RENDERBUFFER_OES, _renderbufferColor);
   [_context renderbufferStorage:GL_RENDERBUFFER_OES fromDrawable:_eaglLayer];
 
+  glBindFramebufferOES(GL_FRAMEBUFFER_OES, _framebuffer);
+  if (glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES) != GL_FRAMEBUFFER_COMPLETE_OES) {
+    abort();
+  }
+
   [self reshape];
 }
 
