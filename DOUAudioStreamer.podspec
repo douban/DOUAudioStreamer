@@ -23,7 +23,7 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   s.ios.deployment_target = '5.0'
-  s.ios.frameworks = 'Accelerate', 'CFNetwork', 'CoreAudio', 'AudioToolbox', 'AVFoundation', 'QuartzCore', 'OpenGLES', 'MobileCoreServices'
+  s.ios.frameworks = 'Accelerate', 'CFNetwork', 'CoreAudio', 'AudioToolbox', 'AVFoundation', 'MediaPlayer', 'QuartzCore', 'OpenGLES', 'MobileCoreServices'
 
   s.osx.deployment_target = '10.7'
   s.osx.framework = 'Accelerate', 'CFNetwork', 'CoreAudio', 'AudioToolbox', 'AudioUnit', 'CoreServices'
