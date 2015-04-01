@@ -30,7 +30,7 @@ static DOUAudioStreamerOptions gOptions = DOUAudioStreamerDefaultOptions;
 
 + (void)setOptions:(DOUAudioStreamerOptions)options
 {
-  if (((gOptions ^ options) & DOUAudioStreamerKeepPersistentVolume) &&
+  if (!!((gOptions ^ options) & DOUAudioStreamerKeepPersistentVolume) &&
       !(options & DOUAudioStreamerKeepPersistentVolume)) {
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:kDOUAudioStreamerVolumeKey];
   }
