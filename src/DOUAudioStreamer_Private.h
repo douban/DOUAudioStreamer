@@ -35,7 +35,7 @@
 @property (nonatomic, assign) double bufferingRatio;
 
 #if TARGET_OS_IPHONE
-@property (nonatomic, assign, getter = isPausedByInterruption) BOOL pausedByInterruption;
+@property (nonatomic, assign, getter=isPausedByInterruption) BOOL pausedByInterruption;
 #endif /* TARGET_OS_IPHONE */
 
 @end

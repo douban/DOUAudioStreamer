@@ -30,8 +30,8 @@
 - (void)flushShouldResetTiming:(BOOL)shouldResetTiming;
 
 @property (nonatomic, readonly) NSUInteger currentTime;
-@property (nonatomic, readonly, getter = isStarted) BOOL started;
-@property (nonatomic, assign, getter = isInterrupted) BOOL interrupted;
+@property (nonatomic, readonly, getter=isStarted) BOOL started;
+@property (nonatomic, assign, getter=isInterrupted) BOOL interrupted;
 @property (nonatomic, assign) double volume;
 
 @property (nonatomic, copy) NSArray *analyzers;

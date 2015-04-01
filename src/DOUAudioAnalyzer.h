@@ -28,6 +28,6 @@
 - (void)copyLevels:(float *)levels;
 
 @property (nonatomic, assign) NSTimeInterval interval;
-@property (nonatomic, assign, getter = isEnabled) BOOL enabled;
+@property (nonatomic, assign, getter=isEnabled) BOOL enabled;
 
 @end

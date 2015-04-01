@@ -30,7 +30,7 @@ typedef void (^DOUMPMediaLibraryAssetLoaderCompletedBlock)(void);
 @property (nonatomic, strong, readonly) NSString *mimeType;
 @property (nonatomic, strong, readonly) NSString *fileExtension;
 
-@property (nonatomic, assign, readonly, getter = isFailed) BOOL failed;
+@property (nonatomic, assign, readonly, getter=isFailed) BOOL failed;
 
 @property (copy) DOUMPMediaLibraryAssetLoaderCompletedBlock completedBlock;
 

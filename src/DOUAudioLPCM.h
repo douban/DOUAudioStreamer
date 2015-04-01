@@ -18,7 +18,7 @@
 
 @interface DOUAudioLPCM : NSObject
 
-@property (nonatomic, assign, getter = isEnd) BOOL end;
+@property (nonatomic, assign, getter=isEnd) BOOL end;
 
 - (BOOL)readBytes:(void **)bytes length:(NSUInteger *)length;
 - (void)writeBytes:(const void *)bytes length:(NSUInteger)length;

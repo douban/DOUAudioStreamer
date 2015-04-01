@@ -40,7 +40,7 @@
 @property (nonatomic, readonly) NSUInteger dataOffset;
 @property (nonatomic, readonly) NSUInteger estimatedDuration;
 
-@property (nonatomic, readonly, getter = isOpened) BOOL opened;
+@property (nonatomic, readonly, getter=isOpened) BOOL opened;
 
 - (BOOL)open;
 - (void)close;

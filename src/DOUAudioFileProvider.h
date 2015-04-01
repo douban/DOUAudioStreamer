@@ -40,8 +40,8 @@ typedef void (^DOUAudioFileProviderEventBlock)(void);
 @property (nonatomic, readonly) NSUInteger receivedLength;
 @property (nonatomic, readonly) NSUInteger downloadSpeed;
 
-@property (nonatomic, readonly, getter = isFailed) BOOL failed;
-@property (nonatomic, readonly, getter = isReady) BOOL ready;
-@property (nonatomic, readonly, getter = isFinished) BOOL finished;
+@property (nonatomic, readonly, getter=isFailed) BOOL failed;
+@property (nonatomic, readonly, getter=isReady) BOOL ready;
+@property (nonatomic, readonly, getter=isFinished) BOOL finished;
 
 @end

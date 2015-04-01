@@ -23,7 +23,7 @@
 
 @interface DOUEAGLView : UIView
 
-@property (nonatomic, getter = isPaused) BOOL paused;
+@property (nonatomic, getter=isPaused) BOOL paused;
 @property (nonatomic, assign) NSInteger frameInterval;
 
 - (void)prepare;
