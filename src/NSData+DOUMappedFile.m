@@ -63,27 +63,27 @@ static CFAllocatorRef get_mmap_deallocator()
 
 @implementation NSData (DOUMappedFile)
 
-+ (instancetype)dataWithMappedContentsOfFile:(NSString *)path
++ (instancetype)dou_dataWithMappedContentsOfFile:(NSString *)path
 {
-  return [[self class] _dataWithMappedContentsOfFile:path modifiable:NO];
+  return [[self class] _dou_dataWithMappedContentsOfFile:path modifiable:NO];
 }
 
-+ (instancetype)dataWithMappedContentsOfURL:(NSURL *)url
++ (instancetype)dou_dataWithMappedContentsOfURL:(NSURL *)url
 {
-  return [[self class] dataWithMappedContentsOfFile:[url path]];
+  return [[self class] dou_dataWithMappedContentsOfFile:[url path]];
 }
 
-+ (instancetype)modifiableDataWithMappedContentsOfFile:(NSString *)path
++ (instancetype)dou_modifiableDataWithMappedContentsOfFile:(NSString *)path
 {
-  return [[self class] _dataWithMappedContentsOfFile:path modifiable:YES];
+  return [[self class] _dou_dataWithMappedContentsOfFile:path modifiable:YES];
 }
 
-+ (instancetype)modifiableDataWithMappedContentsOfURL:(NSURL *)url
++ (instancetype)dou_modifiableDataWithMappedContentsOfURL:(NSURL *)url
 {
-  return [[self class] modifiableDataWithMappedContentsOfFile:[url path]];
+  return [[self class] dou_modifiableDataWithMappedContentsOfFile:[url path]];
 }
 
-+ (instancetype)_dataWithMappedContentsOfFile:(NSString *)path modifiable:(BOOL)modifiable
++ (instancetype)_dou_dataWithMappedContentsOfFile:(NSString *)path modifiable:(BOOL)modifiable
 {
   NSFileHandle *fileHandle = nil;
   if (modifiable) {
@@ -125,7 +125,7 @@ static CFAllocatorRef get_mmap_deallocator()
   return CFBridgingRelease(CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, (const UInt8 *)address, (CFIndex)size, get_mmap_deallocator()));
 }
 
-- (void)synchronizeMappedFile
+- (void)dou_synchronizeMappedFile
 {
   NSNumber *key = [NSNumber numberWithUnsignedLongLong:(uintptr_t)[self bytes]];
   NSNumber *fileSize = nil;

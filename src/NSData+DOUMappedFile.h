@@ -18,12 +18,12 @@
 
 @interface NSData (DOUMappedFile)
 
-+ (instancetype)dataWithMappedContentsOfFile:(NSString *)path;
-+ (instancetype)dataWithMappedContentsOfURL:(NSURL *)url;
++ (instancetype)dou_dataWithMappedContentsOfFile:(NSString *)path;
++ (instancetype)dou_dataWithMappedContentsOfURL:(NSURL *)url;
 
-+ (instancetype)modifiableDataWithMappedContentsOfFile:(NSString *)path;
-+ (instancetype)modifiableDataWithMappedContentsOfURL:(NSURL *)url;
++ (instancetype)dou_modifiableDataWithMappedContentsOfFile:(NSString *)path;
++ (instancetype)dou_modifiableDataWithMappedContentsOfURL:(NSURL *)url;
 
-- (void)synchronizeMappedFile;
+- (void)dou_synchronizeMappedFile;
 
 @end
