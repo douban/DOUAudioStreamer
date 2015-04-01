@@ -98,7 +98,7 @@ static BOOL gLastProviderIsFinished = NO;
       return nil;
     }
 
-    _mappedData = [NSData dataWithMappedContentsOfFile:_cachedPath];
+    _mappedData = [NSData dou_dataWithMappedContentsOfFile:_cachedPath];
     _expectedLength = [_mappedData length];
     _receivedLength = [_mappedData length];
   }
@@ -247,7 +247,7 @@ static BOOL gLastProviderIsFinished = NO;
   }
   else {
     _requestCompleted = YES;
-    [_mappedData synchronizeMappedFile];
+    [_mappedData dou_synchronizeMappedFile];
   }
 
   if (!_failed &&
@@ -288,7 +288,7 @@ static BOOL gLastProviderIsFinished = NO;
 
   _mimeType = [[_request responseHeaders] objectForKey:@"Content-Type"];
 
-  _mappedData = [NSData modifiableDataWithMappedContentsOfFile:_cachedPath];
+  _mappedData = [NSData dou_modifiableDataWithMappedContentsOfFile:_cachedPath];
 }
 
 - (void)_requestDidReceiveData:(NSData *)data
@@ -568,7 +568,7 @@ static void audio_file_stream_packets_proc(void *inClientData,
   _cachedPath = [_assetLoader cachedPath];
   _cachedURL = [NSURL fileURLWithPath:_cachedPath];
 
-  _mappedData = [NSData dataWithMappedContentsOfFile:_cachedPath];
+  _mappedData = [NSData dou_dataWithMappedContentsOfFile:_cachedPath];
   _expectedLength = [_mappedData length];
   _receivedLength = [_mappedData length];
 
