@@ -177,6 +177,14 @@ static BOOL gLastProviderIsFinished = NO;
   if (self) {
     _audioFileURL = [audioFile audioFileURL];
 
+    if ([audioFile respondsToSelector:@selector(cachedAudioFileURL)]){
+      _cachedURL = [audioFile cachedAudioFileURL];
+      _cachedPath = [_cachedURL absoluteString];
+    }else{
+      _cachedPath = [[self class] _cachedPathForAudioFileURL:_audioFileURL];
+      _cachedURL = [NSURL fileURLWithPath:_cachedPath];
+    }
+
     if ([DOUAudioStreamer options] & DOUAudioStreamerRequireSHA256) {
       _sha256Ctx = (CC_SHA256_CTX *)malloc(sizeof(CC_SHA256_CTX));
       CC_SHA256_Init(_sha256Ctx);
@@ -279,9 +287,6 @@ static BOOL gLastProviderIsFinished = NO;
 - (void)_requestDidReceiveResponse
 {
   _expectedLength = [_request responseContentLength];
-
-  _cachedPath = [[self class] _cachedPathForAudioFileURL:_audioFileURL];
-  _cachedURL = [NSURL fileURLWithPath:_cachedPath];
 
   [[NSFileManager defaultManager] createFileAtPath:_cachedPath contents:nil attributes:nil];
   [[NSFileHandle fileHandleForWritingAtPath:_cachedPath] truncateFileAtOffset:_expectedLength];
