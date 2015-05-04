@@ -179,7 +179,7 @@ static BOOL gLastProviderIsFinished = NO;
 
     if ([audioFile respondsToSelector:@selector(cachedAudioFileURL)]){
       _cachedURL = [audioFile cachedAudioFileURL];
-      _cachedPath = [_cachedURL absoluteString];
+      _cachedPath = [_cachedURL path];
     }else{
       _cachedPath = [[self class] _cachedPathForAudioFileURL:_audioFileURL];
       _cachedURL = [NSURL fileURLWithPath:_cachedPath];
