@@ -20,7 +20,9 @@ static void *kDurationKVOKey = &kDurationKVOKey;
 static void *kBufferingRatioKVOKey = &kBufferingRatioKVOKey;
 
 @implementation RADOUAudioStreamer {
-  NSMutableDictionary *_sounds ;
+@private
+  NSTimer * _timer;
+  NSMutableDictionary *_sounds;
 }
 
 @synthesize bridge = _bridge;
@@ -47,6 +49,35 @@ static void *kBufferingRatioKVOKey = &kBufferingRatioKVOKey;
   return (__bridge_transfer NSString *)uuidStringRef;
 }
 
+- (void) _emitEvent:(NSString *) eventName
+          withValue: (NSDictionary *) eventValue
+         andSoundId: (NSString *) soundId
+{
+  NSDictionary * body = @{@"name": eventName,
+                          @"value": eventValue};
+  
+  NSString * nativeEventName = [NSString stringWithFormat:@"EventAudio-%@", soundId];
+  
+  NSLog(@"fire event:%@", nativeEventName);
+  
+  [self.bridge.eventDispatcher
+   sendDeviceEventWithName:nativeEventName
+   body:body];
+}
+
+- (void) _whilePlaying: (id)timer
+
+{
+  DOUAudioStreamer * streamer = [[timer userInfo] valueForKey: @"streamer"];
+  NSString * soundId = [[timer userInfo] valueForKey:@"id"];
+  NSString * eventName = @"whileplaying";
+  NSDictionary * eventValue = @{
+                 @"position": @([streamer currentTime]),
+                 @"duration": @([streamer duration])
+                 };
+  [self _emitEvent:eventName withValue:eventValue andSoundId:soundId];
+}
+
 RCT_EXPORT_MODULE();
 
 RCT_EXPORT_METHOD(createSound: (NSDictionary *) song
@@ -57,7 +88,15 @@ RCT_EXPORT_METHOD(createSound: (NSDictionary *) song
   [track setTitle:[song objectForKey:@"title"]];
   [track setAudioFileURL:[NSURL URLWithString:[song objectForKey:@"url"]]];
   id streamer = [DOUAudioStreamer streamerWithAudioFile:track];
-
+  int oPollingInterval = [[song objectForKey: @"pollingInterval"] doubleValue];
+  
+  if(oPollingInterval < 1){
+    // set the default value
+    oPollingInterval = 1000;
+  }
+  
+  NSTimeInterval pollingInterval = oPollingInterval / 1000;
+  
   NSString * audioName = [self uniqueId];
   [self createSoundWithName:audioName andValue: streamer];
 
@@ -77,7 +116,16 @@ RCT_EXPORT_METHOD(createSound: (NSDictionary *) song
                  options:NSKeyValueObservingOptionNew
                  context:kBufferingRatioKVOKey];
   // end observers
-
+  
+  // @todo add _timer for all playing audios
+  dispatch_async(dispatch_get_main_queue(), ^{
+    _timer = [NSTimer scheduledTimerWithTimeInterval:pollingInterval
+                                            target:self
+                                          selector: @selector(_whilePlaying:)
+                                          userInfo: @{@"streamer": streamer, @"id": audioName}
+                                           repeats: YES];
+  });
+  
   callback(@[[NSNull null], audioName]);
 }
 
@@ -86,7 +134,9 @@ RCT_EXPORT_METHOD(createSound: (NSDictionary *) song
                         change:(NSDictionary *)change
                        context:(void *)context
 {
-  // NSString * eventName = @"what";
+  NSString * eventName;
+  NSDictionary * eventValue;
+  
   DOUAudioStreamer * streamer = object;
   NSString * soundId;
   NSArray * names = [_sounds allKeysForObject: streamer];
@@ -95,29 +145,63 @@ RCT_EXPORT_METHOD(createSound: (NSDictionary *) song
   }
 
   if (context == kStatusKVOKey) {
-    //[self performSelector:@selector(_updateStatus)
-                 //onThread:[NSThread mainThread]
-               //withObject:nil
-            //waitUntilDone:NO];
+    switch (streamer.status) {
+      case DOUAudioStreamerPlaying:
+        eventName = @"play";
+        break;
+      case DOUAudioStreamerPaused:
+        eventName = @"pause";
+        break;
+      case DOUAudioStreamerIdle:
+        eventName = @"idle";
+        break;
+      case DOUAudioStreamerFinished:
+        eventName = @"finish";
+        break;
+      case DOUAudioStreamerBuffering:
+        eventName = @"buffering";
+        break;
+      case DOUAudioStreamerError:
+        eventName = @"error";
+        break;
+      default:
+        break;
+    }
+    eventValue = @{};
   }
   else if (context == kDurationKVOKey) {
-    //[self performSelector:@selector(_timerAction:)
-                 //onThread:[NSThread mainThread]
-               //withObject:nil
-            //waitUntilDone:NO];
+    eventName = @"whileplaying";
+    eventValue = @{
+      @"position": @([streamer currentTime]),
+      @"duration": @([streamer duration])
+    };
   }
   else if (context == kBufferingRatioKVOKey) {
-    //[self performSelector:@selector(_updateBufferingStatus)
-                 //onThread:[NSThread mainThread]
-               //withObject:nil
-            //waitUntilDone:NO];
+    eventName = @"whileloading";
+    eventValue = @{
+      @"bufferingRatio": @([streamer bufferingRatio]),
+      @"bytesLoaded": @([streamer receivedLength]),
+      @"bytesTotal": @([streamer expectedLength]),
+      @"downloadSpeed": @([streamer downloadSpeed])
+    };
   }
   else {
     [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    return;
   }
+  
+  NSDictionary * body = @{
+    @"name": eventName,
+    @"value": eventValue
+  };
+  
+  NSString * nativeEventName = [NSString stringWithFormat:@"EventAudio-%@", soundId];
+  
+  NSLog(@"fire event:%@", nativeEventName);
 
-  [[[self bridge] eventDispatcher] sendAppEventWithName:@"EventAudio"
-                                                  body:@{@"name": eventName}];
+  [self.bridge.eventDispatcher
+   sendDeviceEventWithName:nativeEventName
+   body:body];
 }
 
 RCT_EXPORT_METHOD(pause: (NSString *) name){
@@ -142,17 +226,10 @@ RCT_EXPORT_METHOD(stop: (NSString *) name){
 }
 
 // NSTimeInterval is double
-RCT_EXPORT_METHOD(setCurrentTime: (NSTimeInterval) time){
-  // return [_audioStreamer setCurrentTime: time];
+RCT_EXPORT_METHOD(setCurrentTime: (NSString *) name andTime: (NSTimeInterval) time){
+  DOUAudioStreamer * streamer = [self getSoundWithName:name];
+  if(streamer){
+    [streamer setCurrentTime: time];
+  }
 }
-
-RCT_EXPORT_METHOD(duration){
-  // return [_audioStreamer duration];
-}
-
-RCT_EXPORT_METHOD(currentTime){
-}
-
-RCT_EXPORT_METHOD(status){}
-
 @end
