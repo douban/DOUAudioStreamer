@@ -9,7 +9,6 @@ class DouAudio extends EventEmitter {
 
   constructor(id) {
     super();
-    
     this.id = id;
 
     this.nativeEventSubscription = DeviceEventEmitter.addListener(
@@ -40,27 +39,35 @@ class DouAudio extends EventEmitter {
       paused: true
     });
 
+    for(let command of ['play', 'pause', 'stop', 'setPosition']) {
+      this[command] = (...args) => {
+        return Streamer[command].call(this, this.id, ...args);
+      }
+    }
+
   }
 
   _dispatchEvent(o) {
-    // {name, data}
     console.log(o);
-    Object.assign(this, o.data);
-    this.emit(o.name, o.data);
+    Object.assign(this, o.value);
+    this.emit(o.name, o.value);
   }
 
   destruct() {
     // @todo tell the objc to destroy the sound
     this.nativeEventSubscription.remove();
+    Streamer.destruct(this.id);
   }
+
 }
 
 DouAudio.createSound = function (options, callback) {
   // pollingInterval
-
   Streamer.createSound(options, function (error, id) {
     // console.log(arguments);
-    Streamer.play(id);
+    if(options.autoPlay){
+      Streamer.play(id);
+    }
     var audio = new DouAudio(id);
     callback && callback(audio);
   });

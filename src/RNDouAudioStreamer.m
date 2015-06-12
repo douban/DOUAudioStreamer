@@ -8,7 +8,7 @@
 #import "RNDouAudioStreamer.h"
 #import "DOUAudioStreamer.h"
 #import "DOUAudioStreamer+Options.h"
-#import "Track.h"
+#import "RNDouAudioTrack.h"
 
 #import "RCTConvert.h"
 #import "RCTBridge.h"
@@ -30,6 +30,19 @@ static void *kBufferingRatioKVOKey = &kBufferingRatioKVOKey;
 - (instancetype)init {
   [DOUAudioStreamer setOptions:[DOUAudioStreamer options] | DOUAudioStreamerRequireSHA256];
   _sounds = [NSMutableDictionary dictionaryWithDictionary:@{}];
+  
+  dispatch_async(
+    dispatch_get_main_queue(),
+    // [self methodQueue],
+    //dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+  ^{
+    _timer = [NSTimer scheduledTimerWithTimeInterval:1.0
+                                              target:self
+                                            selector: @selector(_whilePlaying:)
+                                            userInfo: nil
+                                             repeats: YES];
+  });
+  
   return self;
 }
 
@@ -68,14 +81,17 @@ static void *kBufferingRatioKVOKey = &kBufferingRatioKVOKey;
 - (void) _whilePlaying: (id)timer
 
 {
-  DOUAudioStreamer * streamer = [[timer userInfo] valueForKey: @"streamer"];
-  NSString * soundId = [[timer userInfo] valueForKey:@"id"];
-  NSString * eventName = @"whileplaying";
-  NSDictionary * eventValue = @{
-                 @"position": @([streamer currentTime]),
-                 @"duration": @([streamer duration])
-                 };
-  [self _emitEvent:eventName withValue:eventValue andSoundId:soundId];
+  [_sounds enumerateKeysAndObjectsUsingBlock:^(NSString * soundId, DOUAudioStreamer * streamer, BOOL *stop) {
+    if(streamer.status != DOUAudioStreamerPlaying) {
+      return;
+    }
+    NSString * eventName = @"whileplaying";
+    NSDictionary * eventValue = @{
+                                  @"position": @([streamer currentTime] * 1000),
+                                  @"duration": @([streamer duration] * 1000)
+                                };
+    [self _emitEvent:eventName withValue:eventValue andSoundId:soundId];
+  }];
 }
 
 RCT_EXPORT_MODULE();
@@ -88,14 +104,14 @@ RCT_EXPORT_METHOD(createSound: (NSDictionary *) song
   [track setTitle:[song objectForKey:@"title"]];
   [track setAudioFileURL:[NSURL URLWithString:[song objectForKey:@"url"]]];
   id streamer = [DOUAudioStreamer streamerWithAudioFile:track];
-  int oPollingInterval = [[song objectForKey: @"pollingInterval"] doubleValue];
   
+  /*
+  int oPollingInterval = [[song objectForKey: @"pollingInterval"] doubleValue];
   if(oPollingInterval < 1){
     // set the default value
     oPollingInterval = 1000;
   }
-  
-  NSTimeInterval pollingInterval = oPollingInterval / 1000;
+  NSTimeInterval pollingInterval = oPollingInterval / 1000; */
   
   NSString * audioName = [self uniqueId];
   [self createSoundWithName:audioName andValue: streamer];
@@ -118,15 +134,21 @@ RCT_EXPORT_METHOD(createSound: (NSDictionary *) song
   // end observers
   
   // @todo add _timer for all playing audios
-  dispatch_async(dispatch_get_main_queue(), ^{
-    _timer = [NSTimer scheduledTimerWithTimeInterval:pollingInterval
-                                            target:self
-                                          selector: @selector(_whilePlaying:)
-                                          userInfo: @{@"streamer": streamer, @"id": audioName}
-                                           repeats: YES];
-  });
+
   
   callback(@[[NSNull null], audioName]);
+}
+
+RCT_EXPORT_METHOD(destructSound: (NSString *) name){
+  DOUAudioStreamer * streamer = [self getSoundWithName:name];
+  if(streamer == nil){
+    return;
+  }
+  [streamer pause];
+  [streamer removeObserver:self forKeyPath:@"status"];
+  [streamer removeObserver:self forKeyPath:@"duration"];
+  [streamer removeObserver:self forKeyPath:@"bufferingRatio"];
+  [_sounds removeObjectForKey:name];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
@@ -226,7 +248,7 @@ RCT_EXPORT_METHOD(stop: (NSString *) name){
 }
 
 // NSTimeInterval is double
-RCT_EXPORT_METHOD(setCurrentTime: (NSString *) name andTime: (NSTimeInterval) time){
+RCT_EXPORT_METHOD(setPosition: (NSString *) name andTime: (NSTimeInterval) time){
   DOUAudioStreamer * streamer = [self getSoundWithName:name];
   if(streamer){
     [streamer setCurrentTime: time];

@@ -14,7 +14,7 @@
  *
  */
 
-#import "Track.h"
+#import "RNDouAudioTrack.h"
 
 @implementation Track
 
