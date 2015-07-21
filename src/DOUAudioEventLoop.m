@@ -369,13 +369,15 @@ static void audio_route_change_listener(void *inClientData,
       status = AudioSessionSetActive(TRUE);
       NSAssert(status == noErr, @"failed to activate audio session");
 #pragma clang diagnostic pop
-      [_renderer setInterrupted:NO];
-
-      if (*streamer != nil &&
-          [*streamer status] == DOUAudioStreamerPaused &&
-          [*streamer isPausedByInterruption]) {
-        [*streamer setPausedByInterruption:NO];
-        [self performSelector:@selector(play) onThread:[NSThread mainThread] withObject:nil waitUntilDone:NO];
+      if (status == noErr) {
+        [_renderer setInterrupted:NO];
+        
+        if (*streamer != nil &&
+            [*streamer status] == DOUAudioStreamerPaused &&
+            [*streamer isPausedByInterruption]) {
+          [*streamer setPausedByInterruption:NO];
+          [self performSelector:@selector(play) onThread:[NSThread mainThread] withObject:nil waitUntilDone:NO];
+        }
       }
     }
   }
