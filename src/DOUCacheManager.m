@@ -7,6 +7,7 @@
 //
 
 #import "DOUCacheManager.h"
+#include <CommonCrypto/CommonDigest.h>
 
 @interface DOUCacheManager()
 @property (nonatomic,assign) NSUInteger maximumCacheFile;
@@ -49,6 +50,34 @@
         }
     }
     return douArray;
+}
+
++ (NSString *)_sha256ForAudioFileURL:(NSURL *)audioFileURL
+{
+    NSString *string = [audioFileURL absoluteString];
+    unsigned char hash[CC_SHA256_DIGEST_LENGTH];
+    CC_SHA256([string UTF8String], (CC_LONG)[string lengthOfBytesUsingEncoding:NSUTF8StringEncoding], hash);
+    
+    NSMutableString *result = [NSMutableString stringWithCapacity:CC_SHA256_DIGEST_LENGTH * 2];
+    for (size_t i = 0; i < CC_SHA256_DIGEST_LENGTH; ++i) {
+        [result appendFormat:@"%02x", hash[i]];
+    }
+    
+    return result;
+}
+
++ (NSString *)_cachedPathForAudioFileURL:(NSURL *)audioFileURL
+{
+    NSString *filename = [NSString stringWithFormat:@"%@.dou", [self _sha256ForAudioFileURL:audioFileURL]];
+    return [NSTemporaryDirectory() stringByAppendingPathComponent:filename];
+}
+
+- (void)cleanCacheWithURL:(NSURL*)url {
+    if (url == nil) {
+        return;
+    }
+    NSString *localPath = [[self class] _cachedPathForAudioFileURL:url];
+    [[NSFileManager defaultManager] removeItemAtPath:localPath error:nil];
 }
 
 - (void) cleanUselessCache {
