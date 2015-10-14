@@ -26,6 +26,10 @@
 
 @optional
 
+- (NSInteger )audioFileId;
+
+- (NSString *)audioFileName;
+
 - (DOUAudioFilePreprocessor *)audioFilePreprocessor;
 
 @end

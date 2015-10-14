@@ -9,9 +9,12 @@
 #import <Foundation/Foundation.h>
 #import "DOUAudioStreamer+Options.h"
 @interface DOUCacheManager : NSObject
-+(DOUCacheManager*)shared;
++(nonnull DOUCacheManager*)shared;
 - (void) manualManagerRemoteAudioFileCache:(DOUAudioStreamerOptions)opt maximumFileCount:(NSUInteger)count;
 - (void) cleanUselessCache;
 - (void) cleanAllCache;
-- (void) cleanCacheWithURL:(NSURL*)url;
+- (void) cleanCacheWithURL:(nonnull NSURL*)url;
+- (void) addSearchCachePaths:(nullable NSString*)paths;
+- (nullable NSString*) addtionalCachePaths;
+- (void) moveFileToAddtionalCachePath:(nonnull NSURL*)url;
 @end

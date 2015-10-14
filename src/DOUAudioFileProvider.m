@@ -21,6 +21,7 @@
 #import "DOUTrack.h"
 #include <CommonCrypto/CommonDigest.h>
 #include <AudioToolbox/AudioToolbox.h>
+#import "DOUCacheManager.h"
 
 #if TARGET_OS_IPHONE
 #include <MobileCoreServices/MobileCoreServices.h>
@@ -647,27 +648,40 @@ static void audio_file_stream_packets_proc(void *inClientData,
         return nil;
     }
     
-    NSURL *audioFileURL = [audioFile audioFileURL];
+    __block NSURL *audioFileURL = [audioFile audioFileURL];
     if (audioFileURL == nil) {
         return nil;
     }
     
+    /// load data from cache first
     NSString *localPath = [_DOUAudioRemoteFileProvider _cachedPathForAudioFileURL:audioFileURL];
     NSFileManager *fm = [NSFileManager defaultManager];
     BOOL isDir = NO;
-    DOUTrack *localTrack = nil;
-    if ([fm fileExistsAtPath:localPath isDirectory:&isDir]) {
-        audioFileURL = [[NSURL alloc]initFileURLWithPath:localPath];
+    __block DOUTrack *localTrack = nil;
+    void(^getLocalTrack)(NSString* aPath) = ^(NSString *aPath) {
+        audioFileURL = [[NSURL alloc]initFileURLWithPath:aPath];
         localTrack = [[DOUTrack alloc]init];
         localTrack.audioFileURL = audioFileURL;
+    };
+    if ([fm fileExistsAtPath:localPath isDirectory:&isDir]) {
+        getLocalTrack(localPath);
+    } else { /// search for additional cache path
+        NSString *diretory = [DOUCacheManager shared].addtionalCachePaths;
+        if ( diretory != nil ) {
+            NSString *filename = [NSString stringWithFormat:@"%@.dou", [_DOUAudioRemoteFileProvider _sha256ForAudioFileURL:audioFileURL]];
+            NSString *filePath = [diretory stringByAppendingPathComponent:filename];
+            if ([fm fileExistsAtPath:filePath isDirectory:&isDir]) {
+                getLocalTrack(filePath);
+            }
+        }
     }
     
     if ([audioFileURL isFileURL]) {
-        id <DOUAudioFile> final = audioFile;
+        id <DOUAudioFile> finalTrack = audioFile;
         if (localTrack != nil) {
-            final = localTrack;
+            finalTrack = localTrack;
         }
-        return [[_DOUAudioLocalFileProvider alloc] _initWithAudioFile:final];
+        return [[_DOUAudioLocalFileProvider alloc] _initWithAudioFile: finalTrack];
     }
 #if TARGET_OS_IPHONE
     else if ([[audioFileURL scheme] isEqualToString:@"ipod-library"]) {

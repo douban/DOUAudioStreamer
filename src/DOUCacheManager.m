@@ -10,10 +10,11 @@
 #include <CommonCrypto/CommonDigest.h>
 
 @interface DOUCacheManager()
-@property (nonatomic,assign) NSUInteger maximumCacheFile;
+@property (nonatomic, assign) NSUInteger maximumCacheFile;
+@property (nonatomic, copy) NSString* cachePaths;
 @end
 @implementation DOUCacheManager
-+ (DOUCacheManager *) shared {
++ (nonnull DOUCacheManager *) shared {
     static DOUCacheManager *sharedMyManager = nil;
     @synchronized(self) {
         if (sharedMyManager == nil)
@@ -52,7 +53,7 @@
     return douArray;
 }
 
-+ (NSString *)_sha256ForAudioFileURL:(NSURL *)audioFileURL
++ (NSString *)_sha256ForAudioFileURL:(nonnull NSURL *)audioFileURL
 {
     NSString *string = [audioFileURL absoluteString];
     unsigned char hash[CC_SHA256_DIGEST_LENGTH];
@@ -120,5 +121,45 @@
         NSString *filePath = [path stringByAppendingPathComponent:file];
         [fm removeItemAtPath:filePath error:nil];
     }
+}
+
+- (void)addSearchCachePaths:(nullable NSString *)paths {
+    self.cachePaths = paths;
+}
+
+- (NSString *)addtionalCachePaths {
+    return self.cachePaths;
+}
+
+- (void) moveFileToAddtionalCachePath:(NSURL *)audioFileURL {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSString *destFilePath = [self pathForMoveFileToAddtionalCachePath: audioFileURL];
+        NSFileManager *fm = [NSFileManager defaultManager];
+        BOOL isDir = NO;
+        BOOL fileExist = [fm fileExistsAtPath:destFilePath isDirectory:&isDir];
+        if (fileExist) {
+            return;
+        }
+        NSString *fileName = [NSString stringWithFormat:@"%@.dou", [[self class] _sha256ForAudioFileURL:audioFileURL]];
+        NSString *tmpPath = [NSTemporaryDirectory() stringByAppendingPathComponent:fileName];
+        BOOL tmpExist = [fm fileExistsAtPath:tmpPath isDirectory:&isDir];
+        if (destFilePath != nil && !fileExist && tmpExist) {
+            [fm moveItemAtPath:tmpPath toPath:destFilePath error:nil];
+        }
+    });
+}
+
+- (NSString*) pathForMoveFileToAddtionalCachePath:(nonnull NSURL *)audioFileURL {
+    NSString *diretory = [DOUCacheManager shared].addtionalCachePaths;
+    if ( diretory != nil ) {
+        NSFileManager *fm = [NSFileManager defaultManager];
+        BOOL isDir = NO;
+        NSString *filename = [NSString stringWithFormat:@"%@.dou", [[self class] _sha256ForAudioFileURL:audioFileURL]];
+        NSString *filePath = [diretory stringByAppendingPathComponent:filename];
+        if (![fm fileExistsAtPath:filePath isDirectory:&isDir]) {
+            return filePath;
+        }
+    }
+    return nil;
 }
 @end
