@@ -292,20 +292,20 @@ static void audio_route_change_listener(void *inClientData,
         ([*streamer status] == DOUAudioStreamerPaused ||
          [*streamer status] == DOUAudioStreamerIdle ||
          [*streamer status] == DOUAudioStreamerFinished)) {
-          if (_renderer.interrupted == YES) {
+      if ([_renderer isInterrupted]) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated"
-            OSStatus status;
-            status = AudioSessionSetActive(TRUE);
+        const OSStatus status = AudioSessionSetActive(TRUE);
 #pragma clang diagnostic pop
-            if (status == noErr) {
-              [*streamer setStatus:DOUAudioStreamerPlaying];
-              [_renderer setInterrupted:NO];
-            }
-          } else {
-            [*streamer setStatus:DOUAudioStreamerPlaying];
-          }
+        if (status == noErr) {
+          [*streamer setStatus:DOUAudioStreamerPlaying];
+          [_renderer setInterrupted:NO];
         }
+      }
+      else {
+        [*streamer setStatus:DOUAudioStreamerPlaying];
+      }
+    }
   }
   else if (event == event_pause) {
     if (*streamer != nil &&
@@ -382,7 +382,7 @@ static void audio_route_change_listener(void *inClientData,
 #pragma clang diagnostic pop
       if (status == noErr) {
         [_renderer setInterrupted:NO];
-        
+
         if (*streamer != nil &&
             [*streamer status] == DOUAudioStreamerPaused &&
             [*streamer isPausedByInterruption]) {
