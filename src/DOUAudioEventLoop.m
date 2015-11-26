@@ -175,9 +175,9 @@ typedef NS_ENUM(uint64_t, event_type) {
   NSString *previousOutputRouteType = [[previousOutputRoutes objectAtIndex:0] objectForKey:(__bridge NSString *)kAudioSession_AudioRouteKey_Type];
   if (previousOutputRouteType == nil ||
       (![previousOutputRouteType isEqualToString:(__bridge NSString *)kAudioSessionOutputRoute_Headphones] &&
-       ![previousOutputRouteType isEqualToString:(__bridge NSString *)kAudioSessionOutputRoute_BluetoothA2DP] )) {
-        return;
-      }
+       ![previousOutputRouteType isEqualToString:(__bridge NSString *)kAudioSessionOutputRoute_BluetoothA2DP])) {
+    return;
+  }
 
 #pragma clang diagnostic pop
 
