@@ -33,7 +33,7 @@ DOUAS_MODULE = Extension('douas',
 
 setup(
     name='douas',
-    version='0.2.11',
+    version='0.2.12',
     description='A Core Audio based streaming audio player for iOS/Mac',
     url='https://github.com/douban/DOUAudioStreamer',
     ext_modules=[DOUAS_MODULE],
