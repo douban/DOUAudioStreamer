@@ -8,10 +8,27 @@
 
 #import "DOUCacheManager.h"
 #include <CommonCrypto/CommonDigest.h>
+@implementation VerifyInfo
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [coder encodeObject: _Etag forKey: @"Etag"];
+    [coder encodeObject: _ContentLength forKey: @"ContentLenght"];
+    
+}
+- (instancetype)initWithCoder:(NSCoder *)coder
+{
+    if (self = [super init]) {
+        self.Etag = [coder decodeObjectForKey:@"Etag"];
+        self.ContentLength = [coder decodeObjectForKey:@"ContentLenght"];
+    }
+    return self;
+}
 
+@end
 @interface DOUCacheManager()
 @property (nonatomic, assign) NSUInteger maximumCacheFile;
 @property (nonatomic, copy) NSString* cachePaths;
+@property (nonatomic, strong) NSMutableDictionary<NSString*, VerifyInfo*>* storeInfo;
 @end
 @implementation DOUCacheManager
 + (nonnull DOUCacheManager *) shared {
@@ -161,5 +178,55 @@
         }
     }
     return nil;
+}
+
+
+
+
+#pragma mark -
+
+- (NSMutableDictionary<NSString *,VerifyInfo *> *)storeInfo {
+    if (!_storeInfo) {
+        _storeInfo = [NSMutableDictionary dictionary];
+        id obj = [NSKeyedUnarchiver unarchiveObjectWithFile: [self verifyInfoStorePath]];
+        if (obj && [obj isKindOfClass:[NSDictionary class]]) {
+            [_storeInfo addEntriesFromDictionary:obj];
+        }
+    }
+    return _storeInfo;
+}
+- (NSString*) verifyInfoStorePath {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *path = @"";
+    if (paths && paths.count > 0) {
+        path = paths[0];
+    }
+    path = [path stringByAppendingPathComponent:@"douVerifyInfo"];
+    return path;
+}
+
+- (void) storeInfo:(VerifyInfo*)info forURL:(NSString*)url {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+        if (info && url) {
+            self.storeInfo[url] = info;
+        }
+        [NSKeyedArchiver archiveRootObject: self.storeInfo toFile: [self verifyInfoStorePath]];
+    });
+}
+- (void)checkFileCompeletionForURL:(NSURL * _Nonnull)url {
+    if (_verifyClosure == nil) {
+        return;
+    }
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+        NSString *filePath = [[self class] _cachedPathForAudioFileURL:url];
+        VerifyInfo *info = self.storeInfo[url.absoluteString];
+        if (filePath && info) {
+            NSData *data = [[NSData alloc]initWithContentsOfFile:filePath];
+            BOOL isComplete = _verifyClosure(data, info);
+            if (!isComplete) {
+                [self cleanCacheWithURL:url];
+            }
+        }
+    });
 }
 @end
