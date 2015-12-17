@@ -27,7 +27,7 @@
 @end
 @interface DOUCacheManager()
 @property (nonatomic, assign) NSUInteger maximumCacheFile;
-@property (nonatomic, copy) NSString* cachePaths;
+@property (nonatomic, copy) NSMutableArray<NSString*>* cachePaths;
 @property (nonatomic, strong) NSMutableDictionary<NSString*, VerifyInfo*>* storeInfo;
 @end
 @implementation DOUCacheManager
@@ -139,14 +139,53 @@
         [fm removeItemAtPath:filePath error:nil];
     }
 }
-
-- (void)addSearchCachePaths:(nullable NSString *)paths {
-    self.cachePaths = paths;
+- (NSMutableArray<NSString *> *)cachePaths {
+    if (!_cachePaths) {
+        _cachePaths = [NSMutableArray array];
+        NSString *path = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, true).firstObject;
+        path = [path stringByAppendingPathComponent: @"searchPaths"];
+        id array = [NSKeyedUnarchiver unarchiveObjectWithFile:path];
+        if ([array isKindOfClass:[NSArray<NSString*> class]]) {
+            _cachePaths = array;
+        }
+    }
+    return _cachePaths;
 }
 
-- (NSString *)addtionalCachePaths {
+- (void)addSearchCachePath:(nullable NSString *)path {
+    if (path) {
+        if ([self.cachePaths indexOfObject:path] == NSNotFound) {
+            [self.cachePaths addObject:path];
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                NSString *path = [self pathForSearchPaths];
+                [NSKeyedArchiver archiveRootObject:self.cachePaths toFile:path];
+            });
+        }
+    }
+}
+
+- (void)removeCachePath:(nullable NSString*)path {
+    if (path) {
+        if ([self.cachePaths indexOfObject:path] != NSNotFound) {
+            [self.cachePaths removeObject:path];
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                NSString *path = [self pathForSearchPaths];
+                [NSKeyedArchiver archiveRootObject:self.cachePaths toFile:path];
+            });
+        }
+    }
+}
+
+- (NSString*) pathForSearchPaths {
+    NSString *path = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, true).firstObject;
+    path = [path stringByAppendingPathComponent: @"searchPaths"];
+    return path;
+}
+
+- (NSArray<NSString*>*)addtionalCachePaths {
     return self.cachePaths;
 }
+
 
 - (void) moveFileToAddtionalCachePath:(NSURL *)audioFileURL {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{

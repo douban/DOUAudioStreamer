@@ -17,8 +17,9 @@ typedef BOOL(^VerifyClosure)(NSData* _Nullable, VerifyInfo* _Nullable);
 - (void) cleanUselessCache;
 - (void) cleanAllCache;
 - (void) cleanCacheWithURL:(nonnull NSURL*)url;
-- (void) addSearchCachePaths:(nullable NSString*)paths;
-- (nullable NSString*) addtionalCachePaths;
+- (void) addSearchCachePath:(nullable NSString*)path;
+- (void)removeCachePath:(nullable NSString*)path;
+- (nullable NSArray<NSString*>*) addtionalCachePaths;
 - (void) moveFileToAddtionalCachePath:(nonnull NSURL*)url;
 - (void) checkFileCompeletionForURL:(nonnull NSURL*)url;
 @end
