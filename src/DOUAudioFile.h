@@ -20,9 +20,11 @@
 
 @protocol DOUAudioFile <NSObject>
 
+@property (nonatomic,strong) NSURL *audioFileURL;
+
 @required
 
-- (NSURL *)audioFileURL;
+//- (NSURL *)audioFileURL;
 
 @optional
 
