@@ -15,3 +15,4 @@ The documentation for DOUAudioStreamer is coming.
 ## License
 
 Use and distribution of licensed under the BSD license. See the [LICENSE](https://github.com/douban/DOUAudioStreamer/blob/master/LICENSE) file for full text.
+
