@@ -667,9 +667,11 @@ static void audio_file_stream_packets_proc(void *inClientData,
         getLocalTrack(localPath);
     } else { /// search for additional cache path
         NSArray<NSString*>* paths = [DOUCacheManager shared].addtionalCachePaths;
-        if (paths && paths.count) {
+        NSString *cachePath = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, true).firstObject;
+        if (paths && paths.count && cachePath) {
             for (NSString* diretory in paths) {
-                NSArray *ar = [fm contentsOfDirectoryAtPath:diretory error:nil];
+                NSString *dir = [cachePath stringByAppendingPathComponent:diretory];
+                NSArray *ar = [fm contentsOfDirectoryAtPath:dir error:nil];
                 if (ar.count == 1) {
                     if ([ar.firstObject isEqualToString:@"._DStore"]) {
                         continue;
@@ -679,11 +681,12 @@ static void audio_file_stream_packets_proc(void *inClientData,
                     continue;
                 }
                 NSString *filename = [NSString stringWithFormat:@"%@.dou", [_DOUAudioRemoteFileProvider _sha256ForAudioFileURL:audioFileURL]];
-                NSString *filePath = [diretory stringByAppendingPathComponent:filename];
+                NSString *filePath = [dir stringByAppendingPathComponent:filename];
                 if ([fm fileExistsAtPath:filePath isDirectory:&isDir]) {
                     getLocalTrack(filePath);
                     break;
                 }
+                
             }
         }
         
