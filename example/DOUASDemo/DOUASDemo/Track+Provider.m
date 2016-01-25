@@ -33,28 +33,16 @@
 + (NSArray *)remoteTracks
 {
   static NSArray *tracks = nil;
-
+  
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://douban.fm/j/mine/playlist?type=n&channel=1004693&from=mainsite"]];
-    NSData *data = [NSURLConnection sendSynchronousRequest:request
-                                         returningResponse:NULL
-                                                     error:NULL];
-    NSString *string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:[string dataUsingEncoding:NSUTF8StringEncoding] options:0 error:NULL];
-
-    NSMutableArray *allTracks = [NSMutableArray array];
-    for (NSDictionary *song in [dict objectForKey:@"song"]) {
-      Track *track = [[Track alloc] init];
-      [track setArtist:[song objectForKey:@"artist"]];
-      [track setTitle:[song objectForKey:@"title"]];
-      [track setAudioFileURL:[NSURL URLWithString:[song objectForKey:@"url"]]];
-      [allTracks addObject:track];
-    }
-
-    tracks = [allTracks copy];
+    Track *track = [[Track alloc] init];
+    [track setArtist:@"artist"];
+    [track setTitle:@"title"];
+    [track setAudioFileURL:[NSURL URLWithString:@"http://douban.fm/misc/mp3url?domain=mr7"]];
+    tracks = @[track];
   });
-
+  
   return tracks;
 }
 

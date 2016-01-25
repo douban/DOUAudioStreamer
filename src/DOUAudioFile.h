@@ -27,5 +27,6 @@
 @optional
 
 - (DOUAudioFilePreprocessor *)audioFilePreprocessor;
+- (NSString *)audioFileHost;
 
 @end

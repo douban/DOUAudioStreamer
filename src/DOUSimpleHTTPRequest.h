@@ -31,6 +31,7 @@ typedef void (^DOUSimpleHTTPRequestDidReceiveDataBlock)(NSData *data);
 
 @property (nonatomic, assign) NSTimeInterval timeoutInterval;
 @property (nonatomic, strong) NSString *userAgent;
+@property (nonatomic, strong) NSString *host;
 
 @property (nonatomic, readonly) NSData *responseData;
 @property (nonatomic, readonly) NSString *responseString;

@@ -61,6 +61,7 @@ static BOOL gLastProviderIsFinished = NO;
 @private
   DOUSimpleHTTPRequest *_request;
   NSURL *_audioFileURL;
+  NSString *_audioFileHost;
 
   CC_SHA256_CTX *_sha256Ctx;
 
@@ -176,6 +177,9 @@ static BOOL gLastProviderIsFinished = NO;
   self = [super _initWithAudioFile:audioFile];
   if (self) {
     _audioFileURL = [audioFile audioFileURL];
+    if ([audioFile respondsToSelector:@selector(audioFileHost)]) {
+      _audioFileHost = [audioFile audioFileHost];
+    }
 
     if ([DOUAudioStreamer options] & DOUAudioStreamerRequireSHA256) {
       _sha256Ctx = (CC_SHA256_CTX *)malloc(sizeof(CC_SHA256_CTX));
@@ -351,6 +355,9 @@ static BOOL gLastProviderIsFinished = NO;
 - (void)_createRequest
 {
   _request = [DOUSimpleHTTPRequest requestWithURL:_audioFileURL];
+  if (_audioFileHost) {
+    _request.host = _audioFileHost;
+  }
   __unsafe_unretained _DOUAudioRemoteFileProvider *_self = self;
 
   [_request setCompletedBlock:^{

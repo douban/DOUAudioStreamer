@@ -412,6 +412,9 @@ static void response_stream_client_callback(CFReadStreamRef stream, CFStreamEven
   }
 
   CFHTTPMessageSetHeaderFieldValue(_message, CFSTR("User-Agent"), (__bridge CFStringRef)_userAgent);
+  if (_host) {
+    CFHTTPMessageSetHeaderFieldValue(_message, CFSTR("Host"), (__bridge CFStringRef)_host);
+  }
 
   _responseStream = CFReadStreamCreateForHTTPRequest(kCFAllocatorDefault, _message);
   CFReadStreamSetProperty(_responseStream, kCFStreamPropertyHTTPShouldAutoredirect, kCFBooleanTrue);
