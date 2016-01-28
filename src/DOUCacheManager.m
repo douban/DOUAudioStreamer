@@ -246,10 +246,12 @@
 
 - (void) storeInfo:(VerifyInfo*)info forURL:(NSString*)url {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-        if (info && url) {
-            self.storeInfo[url] = info;
+        if (self.storeInfo) {
+            if (info && url) {
+                self.storeInfo[url] = info;
+            }
+            [NSKeyedArchiver archiveRootObject: self.storeInfo toFile: [self verifyInfoStorePath]];
         }
-        [NSKeyedArchiver archiveRootObject: self.storeInfo toFile: [self verifyInfoStorePath]];
     });
 }
 - (void)checkFileCompeletionForURL:(NSURL * _Nonnull)url {
