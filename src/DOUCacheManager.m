@@ -13,7 +13,7 @@
 {
     [coder encodeObject: _Etag forKey: @"Etag"];
     [coder encodeObject: _ContentLength forKey: @"ContentLenght"];
-    
+
 }
 - (instancetype)initWithCoder:(NSCoder *)coder
 {
@@ -55,12 +55,12 @@
 - (NSMutableArray* __nullable)cacheFiles {
     NSFileManager *fm = [NSFileManager defaultManager];
     NSString *path = NSTemporaryDirectory();
-    
+
     NSArray *array = [fm contentsOfDirectoryAtPath:path error:nil];
     if (array == nil) {
         return nil;
     }
-    
+
     NSMutableArray *douArray = [NSMutableArray array];
     for (NSString *file in array) {
         if ([file hasSuffix: @".dou"]) {
@@ -75,12 +75,12 @@
     NSString *string = [audioFileURL absoluteString];
     unsigned char hash[CC_SHA256_DIGEST_LENGTH];
     CC_SHA256([string UTF8String], (CC_LONG)[string lengthOfBytesUsingEncoding:NSUTF8StringEncoding], hash);
-    
+
     NSMutableString *result = [NSMutableString stringWithCapacity:CC_SHA256_DIGEST_LENGTH * 2];
     for (size_t i = 0; i < CC_SHA256_DIGEST_LENGTH; ++i) {
         [result appendFormat:@"%02x", hash[i]];
     }
-    
+
     return result;
 }
 
@@ -113,13 +113,13 @@
         NSDate *date = [attributes fileModificationDate];
         return date;
     };
-    
+
     [douArray sortUsingComparator:^NSComparisonResult(NSString *obj1, NSString *obj2) {
         NSDate *d1 = lastModificationDate(obj1);
         NSDate *d2 = lastModificationDate(obj2);
         return [d2 compare:d1];
     }];
-    
+
     for (NSUInteger i = 0; i < needToRemove; i++) {
         NSString *filePath = [path stringByAppendingPathComponent:douArray.lastObject];
         [fm removeItemAtPath:filePath error:nil];
@@ -257,15 +257,17 @@
         return;
     }
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-        NSString *filePath = [[self class] _cachedPathForAudioFileURL:url];
-        VerifyInfo *info = self.storeInfo[url.absoluteString];
-        if (filePath && info) {
-            NSData *data = [[NSData alloc]initWithContentsOfFile:filePath];
-            BOOL isComplete = _verifyClosure(data, info);
-            if (!isComplete) {
-                [self cleanCacheWithURL:url];
-            }
-        }
-    });
+       NSString *filePath = [[self class] _cachedPathForAudioFileURL:url];
+       if (self.storeInfo) {
+           VerifyInfo *info = self.storeInfo[url.absoluteString];
+           if (filePath && info) {
+               NSData *data = [[NSData alloc]initWithContentsOfFile:filePath];
+               BOOL isComplete = _verifyClosure(data, info);
+               if (!isComplete) {
+                   [self cleanCacheWithURL:url];
+               }
+           }
+       }
+   });
 }
 @end
