@@ -422,7 +422,18 @@ static void response_stream_client_callback(CFReadStreamRef stream, CFStreamEven
     }
     
     CFHTTPMessageSetHeaderFieldValue(_message, CFSTR("User-Agent"), (__bridge CFStringRef)_userAgent);
-    
+    NSDictionary<NSString*, NSString*> *header = [DOUCacheManager shared].customHeader;
+    if (header) {
+        NSArray<NSString*>* keys = header.keyEnumerator;
+        for (NSString *key in keys) {
+            NSString *value = header[key];
+            if (value) {
+                CFStringRef cfKey = (__bridge CFStringRef)key;
+                CFStringRef cfValue = (__bridge CFStringRef)value;
+                CFHTTPMessageSetHeaderFieldValue(_message, cfKey, cfValue);
+            }
+        }
+    }
     _responseStream = CFReadStreamCreateForHTTPRequest(kCFAllocatorDefault, _message);
     CFReadStreamSetProperty(_responseStream, kCFStreamPropertyHTTPShouldAutoredirect, kCFBooleanTrue);
     CFReadStreamSetProperty(_responseStream, CFSTR("_kCFStreamPropertyReadTimeout"), (__bridge CFNumberRef)[NSNumber numberWithDouble:_timeoutInterval]);

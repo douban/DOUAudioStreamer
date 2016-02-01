@@ -29,6 +29,7 @@
 @property (nonatomic, assign) NSUInteger maximumCacheFile;
 @property (nonatomic, copy) NSMutableArray<NSString*>* cachePaths;
 @property (nonatomic, strong) NSMutableDictionary<NSString*, VerifyInfo*>* storeInfo;
+@property (nonatomic) dispatch_queue_t wokerQueue;
 @end
 @implementation DOUCacheManager
 + (nonnull DOUCacheManager *) shared {
@@ -220,7 +221,13 @@
 }
 
 
-
+#pragma mark - 
+- (dispatch_queue_t)wokerQueue {
+    if (!_wokerQueue) {
+        _wokerQueue = dispatch_queue_create("DoucacheManager.wokerQueue", nil);
+    }
+    return _wokerQueue;
+}
 
 #pragma mark -
 
@@ -245,12 +252,13 @@
 }
 
 - (void) storeInfo:(VerifyInfo*)info forURL:(NSString*)url {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-        if (self.storeInfo) {
+    __weak DOUCacheManager *wself = self;
+    dispatch_async(self.wokerQueue, ^{
+        if (wself.storeInfo) {
             if (info && url) {
-                self.storeInfo[url] = info;
+                wself.storeInfo[url] = info;
             }
-            [NSKeyedArchiver archiveRootObject: self.storeInfo toFile: [self verifyInfoStorePath]];
+            [NSKeyedArchiver archiveRootObject: wself.storeInfo toFile: [wself verifyInfoStorePath]];
         }
     });
 }
@@ -258,15 +266,16 @@
     if (_verifyClosure == nil) {
         return;
     }
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-       NSString *filePath = [[self class] _cachedPathForAudioFileURL:url];
-       if (self.storeInfo) {
-           VerifyInfo *info = self.storeInfo[url.absoluteString];
+    __weak DOUCacheManager *wself = self;
+    dispatch_async(self.wokerQueue, ^{
+       NSString *filePath = [[wself class] _cachedPathForAudioFileURL:url];
+       if (wself.storeInfo) {
+           VerifyInfo *info = wself.storeInfo[url.absoluteString];
            if (filePath && info) {
                NSData *data = [[NSData alloc]initWithContentsOfFile:filePath];
                BOOL isComplete = _verifyClosure(data, info);
                if (!isComplete) {
-                   [self cleanCacheWithURL:url];
+                   [wself cleanCacheWithURL:url];
                }
            }
        }

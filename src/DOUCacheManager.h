@@ -12,6 +12,7 @@
 typedef BOOL(^VerifyClosure)(NSData* _Nullable, VerifyInfo* _Nullable);
 @interface DOUCacheManager : NSObject
 @property (nonatomic, copy) VerifyClosure _Nullable verifyClosure;
+@property (nonatomic, strong) NSDictionary<NSString*, NSString*>* _Nullable customHeader;
 +(nonnull DOUCacheManager*)shared;
 - (void) manualManagerRemoteAudioFileCache:(DOUAudioStreamerOptions)opt maximumFileCount:(NSUInteger)count;
 - (void) cleanUselessCache;
