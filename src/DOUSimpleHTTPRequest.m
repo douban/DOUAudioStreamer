@@ -262,6 +262,9 @@ static CFRunLoopRef controller_get_runloop()
     }
     if (remoteURL) {
         NSString *etag = [_responseHeaders objectForKey:@"Etag"];
+        if (!etag) {
+            etag = @"";
+        }
         VerifyInfo *info = [VerifyInfo new];
         info.Etag = etag;
         info.ContentLength = string;
