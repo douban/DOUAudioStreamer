@@ -157,7 +157,7 @@
     if (path) {
         if ([self.cachePaths indexOfObject:path] == NSNotFound) {
             [self.cachePaths addObject:path];
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            dispatch_async(self.wokerQueue, ^{
                 NSString *path = [self pathForSearchPaths];
                 [NSKeyedArchiver archiveRootObject:self.cachePaths toFile:path];
             });
@@ -169,7 +169,7 @@
     if (path) {
         if ([self.cachePaths indexOfObject:path] != NSNotFound) {
             [self.cachePaths removeObject:path];
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            dispatch_async(self.wokerQueue, ^{
                 NSString *path = [self pathForSearchPaths];
                 [NSKeyedArchiver archiveRootObject:self.cachePaths toFile:path];
             });
