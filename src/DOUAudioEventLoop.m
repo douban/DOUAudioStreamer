@@ -294,14 +294,18 @@ static void audio_route_change_listener(void *inClientData,
          [*streamer status] == DOUAudioStreamerIdle ||
          [*streamer status] == DOUAudioStreamerFinished)) {
       if ([_renderer isInterrupted]) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated"
+#if TARGET_OS_IPHONE
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wdeprecated"
         const OSStatus status = AudioSessionSetActive(TRUE);
-#pragma clang diagnostic pop
+# pragma clang diagnostic pop
         if (status == noErr) {
+#endif /* TARGET_OS_IPHONE */
           [*streamer setStatus:DOUAudioStreamerPlaying];
           [_renderer setInterrupted:NO];
+#if TARGET_OS_IPHONE
         }
+#endif /* TARGET_OS_IPHONE */
       }
       else {
         [*streamer setStatus:DOUAudioStreamerPlaying];
