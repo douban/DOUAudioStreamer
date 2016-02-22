@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = "DOUAudioStreamer"
-  s.version = "0.2.13"
+  s.version = "0.2.14"
   s.license = { :type => "BSD", :file => "LICENSE" }
   s.summary = "A Core Audio based streaming audio player for iOS/Mac."
   s.homepage = "https://github.com/douban/DOUAudioStreamer"
