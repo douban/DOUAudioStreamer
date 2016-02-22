@@ -1,17 +1,4 @@
 Pod::Spec.new do |s|
-  #  DOUAudioStreamer - A Core Audio based streaming audio player for iOS/Mac:
-  #
-  #      http://github.com/douban/DOUAudioStreamer
-  #
-  #  Copyright 2013-2014 Douban Inc.  All rights reserved.
-  #
-  #  Use and distribution licensed under the BSD license.  See
-  #  the LICENSE file for full text.
-  #
-  #  Authors:
-  #      Chongyu Zhu <i@lembacon.com>
-  #
-
   s.name = 'DOUAudioStreamer'
   s.version = '0.2.13'
   s.license = { :type => 'BSD', :file => 'LICENSE' }
