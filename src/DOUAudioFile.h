@@ -26,6 +26,7 @@
 
 @optional
 
+- (NSURL *)cachedAudioFileURL;
 - (DOUAudioFilePreprocessor *)audioFilePreprocessor;
 - (NSString *)audioFileHost;
 
