@@ -355,8 +355,8 @@ static BOOL gLastProviderIsFinished = NO;
 - (void)_createRequest
 {
   _request = [DOUSimpleHTTPRequest requestWithURL:_audioFileURL];
-  if (_audioFileHost) {
-    _request.host = _audioFileHost;
+  if (_audioFileHost != nil) {
+    [_request setHost:_audioFileHost];
   }
   __unsafe_unretained _DOUAudioRemoteFileProvider *_self = self;
 

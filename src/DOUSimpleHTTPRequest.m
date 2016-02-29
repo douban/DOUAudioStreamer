@@ -412,7 +412,7 @@ static void response_stream_client_callback(CFReadStreamRef stream, CFStreamEven
   }
 
   CFHTTPMessageSetHeaderFieldValue(_message, CFSTR("User-Agent"), (__bridge CFStringRef)_userAgent);
-  if (_host) {
+  if (_host != nil) {
     CFHTTPMessageSetHeaderFieldValue(_message, CFSTR("Host"), (__bridge CFStringRef)_host);
   }
 
