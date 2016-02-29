@@ -288,6 +288,11 @@ static BOOL gLastProviderIsFinished = NO;
   _cachedURL = [NSURL fileURLWithPath:_cachedPath];
 
   [[NSFileManager defaultManager] createFileAtPath:_cachedPath contents:nil attributes:nil];
+#if TARGET_OS_IPHONE
+  [[NSFileManager defaultManager] setAttributes:@{NSFileProtectionKey: NSFileProtectionNone}
+                                   ofItemAtPath:_cachedPath
+                                          error:NULL];
+#endif /* TARGET_OS_IPHONE */
   [[NSFileHandle fileHandleForWritingAtPath:_cachedPath] truncateFileAtOffset:_expectedLength];
 
   _mimeType = [[_request responseHeaders] objectForKey:@"Content-Type"];
