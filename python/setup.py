@@ -17,28 +17,28 @@
 from distutils.core import setup, Extension
 import glob
 
-FRAMEWORKS = ['Accelerate',
-              'CFNetwork',
-              'CoreAudio',
-              'AudioToolbox',
-              'AudioUnit',
+FRAMEWORKS = ["Accelerate",
+              "CFNetwork",
+              "CoreAudio",
+              "AudioToolbox",
+              "AudioUnit",
               'CoreServices']
 
-DOUAS_MODULE = Extension('douas',
-                         sources=glob.glob('../src/*.m') + ['douas.m'],
-                         include_dirs=['../src'],
-                         extra_compile_args=['-fobjc-arc'],
+DOUAS_MODULE = Extension("douas",
+                         sources=glob.glob("../src/*.m") + ["douas.m"],
+                         include_dirs=["../src"],
+                         extra_compile_args=["-fobjc-arc"],
                          extra_link_args=[item for f in FRAMEWORKS
-                                               for item in ['-framework', f]])
+                                               for item in ["-framework", f]])
 
 setup(
-    name='douas',
-    version='0.2.14',
-    description='A Core Audio based streaming audio player for iOS/Mac',
-    url='https://github.com/douban/DOUAudioStreamer',
+    name="douas",
+    version="0.2.14",
+    description="A Core Audio based streaming audio player for iOS/Mac",
+    url="https://github.com/douban/DOUAudioStreamer",
     ext_modules=[DOUAS_MODULE],
-    keywords=['douas', 'audio', 'streamer'],
-    license='BSD',
-    author='Chongyu Zhu',
-    author_email='i@lembacon.com'
+    keywords=["douas", "audio", "streamer"],
+    license="BSD",
+    author="Chongyu Zhu",
+    author_email="i@lembacon.com"
 )
