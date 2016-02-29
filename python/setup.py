@@ -38,6 +38,15 @@ setup(
     url="https://github.com/douban/DOUAudioStreamer",
     ext_modules=[DOUAS_MODULE],
     keywords=["douas", "audio", "streamer"],
+    classifiers=[
+        "Development Status :: 3 - Alpha",
+        "Environment :: MacOS X",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: BSD License",
+        "Operating System :: MacOS :: MacOS X",
+        "Programming Language :: Objective C",
+        "Topic :: Software Development :: Libraries :: Python Modules"
+    ],
     license="BSD",
     author="Chongyu Zhu",
     author_email="i@lembacon.com"
