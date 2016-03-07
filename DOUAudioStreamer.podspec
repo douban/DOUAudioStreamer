@@ -1,5 +1,4 @@
 Pod::Spec.new do |s|
-<<<<<<< HEAD
   #  DOUAudioStreamer - A Core Audio based streaming audio player for iOS/Mac:
   #
   #      http://github.com/douban/DOUAudioStreamer
@@ -13,15 +12,7 @@ Pod::Spec.new do |s|
   #      Chongyu Zhu <i@lembacon.com>
   #
 
-  s.name = 'DOUAudioStreamer'
-  s.version = '0.2.14'
-  s.license = { :type => 'BSD', :file => 'LICENSE' }
-  s.summary = 'A Core Audio based streaming audio player for iOS/Mac.'
-  s.homepage = 'https://github.com/douban/DOUAudioStreamer'
-  s.author = { 'Chongyu Zhu' => 'i@lembacon.com' }
-  s.source = { :git => 'https://github.com/douban/DOUAudioStreamer.git', :tag => s.version.to_s }
-  s.source_files = 'src/*.{h,m}'
-=======
+
   s.name = "DOUAudioStreamer"
   s.version = "0.2.15"
   s.license = { :type => "BSD", :file => "LICENSE" }
@@ -30,7 +21,6 @@ Pod::Spec.new do |s|
   s.author = { "Chongyu Zhu" => "i@lembacon.com" }
   s.source = { :git => "https://github.com/douban/DOUAudioStreamer.git", :tag => s.version.to_s }
   s.source_files = "src/*.{h,m}"
->>>>>>> douban/master
   s.requires_arc = true
 
   s.ios.deployment_target = "5.0"

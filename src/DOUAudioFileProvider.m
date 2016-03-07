@@ -61,17 +61,7 @@ static BOOL gLastProviderIsFinished = NO;
 
 @interface _DOUAudioRemoteFileProvider : DOUAudioFileProvider {
 @private
-<<<<<<< HEAD
-    DOUSimpleHTTPRequest *_request;
-    NSURL *_audioFileURL;
-    
-    CC_SHA256_CTX *_sha256Ctx;
-    
-    AudioFileStreamID _audioFileStreamID;
-    BOOL _requiresCompleteFile;
-    BOOL _readyToProducePackets;
-    BOOL _requestCompleted;
-=======
+
   DOUSimpleHTTPRequest *_request;
   NSURL *_audioFileURL;
   NSString *_audioFileHost;
@@ -82,7 +72,7 @@ static BOOL gLastProviderIsFinished = NO;
   BOOL _requiresCompleteFile;
   BOOL _readyToProducePackets;
   BOOL _requestCompleted;
->>>>>>> douban/master
+
 }
 @end
 
@@ -188,10 +178,12 @@ static BOOL gLastProviderIsFinished = NO;
 
 - (instancetype)_initWithAudioFile:(id <DOUAudioFile>)audioFile
 {
-<<<<<<< HEAD
     self = [super _initWithAudioFile:audioFile];
     if (self) {
         _audioFileURL = [audioFile audioFileURL];
+        if ([audioFile respondsToSelector:@selector(audioFileHost)]) {
+            _audioFileHost = [audioFile audioFileHost];
+        }
         
         if ([DOUAudioStreamer options] & DOUAudioStreamerRequireSHA256) {
             _sha256Ctx = (CC_SHA256_CTX *)malloc(sizeof(CC_SHA256_CTX));
@@ -201,22 +193,11 @@ static BOOL gLastProviderIsFinished = NO;
         [self _openAudioFileStream];
         [self _createRequest];
         [_request start];
-=======
-  self = [super _initWithAudioFile:audioFile];
-  if (self) {
-    _audioFileURL = [audioFile audioFileURL];
-    if ([audioFile respondsToSelector:@selector(audioFileHost)]) {
-      _audioFileHost = [audioFile audioFileHost];
-    }
-
-    if ([DOUAudioStreamer options] & DOUAudioStreamerRequireSHA256) {
-      _sha256Ctx = (CC_SHA256_CTX *)malloc(sizeof(CC_SHA256_CTX));
-      CC_SHA256_Init(_sha256Ctx);
->>>>>>> douban/master
     }
     
     return self;
 }
+
 
 - (void)dealloc
 {
@@ -306,36 +287,25 @@ static BOOL gLastProviderIsFinished = NO;
 
 - (void)_requestDidReceiveResponse
 {
-<<<<<<< HEAD
     _expectedLength = [_request responseContentLength];
     
     _cachedPath = [[self class] _cachedPathForAudioFileURL:_audioFileURL];
     _cachedURL = [NSURL fileURLWithPath:_cachedPath];
     
     [[NSFileManager defaultManager] createFileAtPath:_cachedPath contents:nil attributes:nil];
+#if TARGET_OS_IPHONE
+    [[NSFileManager defaultManager] setAttributes:@{NSFileProtectionKey: NSFileProtectionNone}
+                                     ofItemAtPath:_cachedPath
+                                            error:NULL];
+#endif /* TARGET_OS_IPHONE */
     [[NSFileHandle fileHandleForWritingAtPath:_cachedPath] truncateFileAtOffset:_expectedLength];
     
     _mimeType = [[_request responseHeaders] objectForKey:@"Content-Type"];
     
     _mappedData = [NSData dou_modifiableDataWithMappedContentsOfFile:_cachedPath];
-=======
-  _expectedLength = [_request responseContentLength];
-
-  _cachedPath = [[self class] _cachedPathForAudioFileURL:_audioFileURL];
-  _cachedURL = [NSURL fileURLWithPath:_cachedPath];
-
-  [[NSFileManager defaultManager] createFileAtPath:_cachedPath contents:nil attributes:nil];
-#if TARGET_OS_IPHONE
-  [[NSFileManager defaultManager] setAttributes:@{NSFileProtectionKey: NSFileProtectionNone}
-                                   ofItemAtPath:_cachedPath
-                                          error:NULL];
-#endif /* TARGET_OS_IPHONE */
-  [[NSFileHandle fileHandleForWritingAtPath:_cachedPath] truncateFileAtOffset:_expectedLength];
-
-  _mimeType = [[_request responseHeaders] objectForKey:@"Content-Type"];
-
-  _mappedData = [NSData dou_modifiableDataWithMappedContentsOfFile:_cachedPath];
->>>>>>> douban/master
+    
+    
+    
 }
 
 - (void)_requestDidReceiveData:(NSData *)data
@@ -397,26 +367,6 @@ static BOOL gLastProviderIsFinished = NO;
 
 - (void)_createRequest
 {
-<<<<<<< HEAD
-    _request = [DOUSimpleHTTPRequest requestWithURL:_audioFileURL];
-    __unsafe_unretained _DOUAudioRemoteFileProvider *_self = self;
-    
-    [_request setCompletedBlock:^{
-        [_self _requestDidComplete];
-    }];
-    
-    [_request setProgressBlock:^(double downloadProgress) {
-        [_self _requestDidReportProgress:downloadProgress];
-    }];
-    
-    [_request setDidReceiveResponseBlock:^{
-        [_self _requestDidReceiveResponse];
-    }];
-    
-    [_request setDidReceiveDataBlock:^(NSData *data) {
-        [_self _requestDidReceiveData:data];
-    }];
-=======
   _request = [DOUSimpleHTTPRequest requestWithURL:_audioFileURL];
   if (_audioFileHost != nil) {
     [_request setHost:_audioFileHost];
@@ -438,7 +388,7 @@ static BOOL gLastProviderIsFinished = NO;
   [_request setDidReceiveDataBlock:^(NSData *data) {
     [_self _requestDidReceiveData:data];
   }];
->>>>>>> douban/master
+
 }
 
 - (void)_handleAudioFileStreamProperty:(AudioFileStreamPropertyID)propertyID

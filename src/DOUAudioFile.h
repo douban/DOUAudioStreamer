@@ -26,14 +26,13 @@
 
 @optional
 
-<<<<<<< HEAD
+
 - (NSInteger )audioFileId;
 
 - (NSString *)audioFileName;
 
-=======
 - (NSString *)audioFileHost;
->>>>>>> douban/master
+
 - (DOUAudioFilePreprocessor *)audioFilePreprocessor;
 
 @end
