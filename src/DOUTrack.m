@@ -4,7 +4,7 @@
  *
  *      https://github.com/douban/DOUAudioStreamer
  *
- *  Copyright 2013-2016 Douban Inc.  All rights reserved.
+ *  Copyright 2013-2014 Douban Inc.  All rights reserved.
  *
  *  Use and distribution licensed under the BSD license.  See
  *  the LICENSE file for full text.
@@ -14,25 +14,8 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+#import "DOUTrack.h"
 
-@class DOUAudioFilePreprocessor;
-
-@protocol DOUAudioFile <NSObject>
-
-@required
-
-- (NSURL *)audioFileURL;
-
-@optional
-
-
-- (NSInteger )audioFileId;
-
-- (NSString *)audioFileName;
-
-- (NSString *)audioFileHost;
-
-- (DOUAudioFilePreprocessor *)audioFilePreprocessor;
+@implementation DOUTrack
 
 @end
