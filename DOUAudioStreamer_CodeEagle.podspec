@@ -13,13 +13,13 @@ Pod::Spec.new do |s|
   #
 
 
-  s.name = "DOUAudioStreamer"
+  s.name = "DOUAudioStreamer_CodeEagle"
   s.version = "0.2.15"
   s.license = { :type => "BSD", :file => "LICENSE" }
-  s.summary = "A Core Audio based streaming audio player for iOS/Mac."
-  s.homepage = "https://github.com/douban/DOUAudioStreamer"
-  s.author = { "Chongyu Zhu" => "i@lembacon.com" }
-  s.source = { :git => "https://github.com/douban/DOUAudioStreamer.git", :tag => s.version.to_s }
+  s.summary = "A Core Audio based streaming audio player for iOS/Mac. CodeEagle Modified Version"
+  s.homepage = "https://github.com/CodeEagle/DOUAudioStreamer"
+  s.author = { "CodeEagle" => "stasura@hotmail.com" }
+  s.source = { :git => "https://github.com/CodeEagle/DOUAudioStreamer.git", :tag => s.version.to_s }
   s.source_files = "src/*.{h,m}"
   s.requires_arc = true
 
