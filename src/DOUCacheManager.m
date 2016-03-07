@@ -207,14 +207,16 @@
 }
 
 - (NSString*) pathForMoveFileToAddtionalCachePath:(nonnull NSURL *)audioFileURL {
-    NSString *diretory = [DOUCacheManager shared].addtionalCachePaths;
+    NSArray<NSString*> *diretory = [DOUCacheManager shared].addtionalCachePaths;
     if ( diretory != nil ) {
         NSFileManager *fm = [NSFileManager defaultManager];
         BOOL isDir = NO;
         NSString *filename = [NSString stringWithFormat:@"%@.dou", [[self class] _sha256ForAudioFileURL:audioFileURL]];
-        NSString *filePath = [diretory stringByAppendingPathComponent:filename];
-        if (![fm fileExistsAtPath:filePath isDirectory:&isDir]) {
-            return filePath;
+        for (NSString* dir in diretory) {
+            NSString *filePath = [dir stringByAppendingPathComponent:filename];
+            if (![fm fileExistsAtPath:filePath isDirectory:&isDir]) {
+                return filePath;
+            }
         }
     }
     return nil;
