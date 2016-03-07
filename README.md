@@ -1,5 +1,9 @@
 # DOUAudioStreamer
 
+[![CocoaPods](https://img.shields.io/cocoapods/v/DOUAudioStreamer.svg)](https://cocoapods.org/pods/DOUAudioStreamer)
+[![Platform](https://img.shields.io/cocoapods/p/DOUAudioStreamer.svg)](https://cocoapods.org/pods/DOUAudioStreamer)
+[![License](https://img.shields.io/cocoapods/l/DOUAudioStreamer.svg)](https://github.com/douban/DOUAudioStreamer/blob/master/LICENSE)
+
 DOUAudioStreamer is a Core Audio based streaming audio player for iOS/Mac.
 
 ## How to Use

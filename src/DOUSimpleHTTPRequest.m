@@ -4,7 +4,7 @@
  *
  *      https://github.com/douban/DOUAudioStreamer
  *
- *  Copyright 2013-2014 Douban Inc.  All rights reserved.
+ *  Copyright 2013-2016 Douban Inc.  All rights reserved.
  *
  *  Use and distribution licensed under the BSD license.  See
  *  the LICENSE file for full text.
@@ -420,6 +420,7 @@ static void response_stream_client_callback(CFReadStreamRef stream, CFStreamEven
 
 - (void)start
 {
+<<<<<<< HEAD
     if (_responseStream != NULL) {
         return;
     }
@@ -452,6 +453,32 @@ static void response_stream_client_callback(CFReadStreamRef stream, CFStreamEven
     
     _startedTime = CFAbsoluteTimeGetCurrent();
     _downloadSpeed = 0;
+=======
+  if (_responseStream != NULL) {
+    return;
+  }
+
+  CFHTTPMessageSetHeaderFieldValue(_message, CFSTR("User-Agent"), (__bridge CFStringRef)_userAgent);
+  if (_host != nil) {
+    CFHTTPMessageSetHeaderFieldValue(_message, CFSTR("Host"), (__bridge CFStringRef)_host);
+  }
+
+  _responseStream = CFReadStreamCreateForHTTPRequest(kCFAllocatorDefault, _message);
+  CFReadStreamSetProperty(_responseStream, kCFStreamPropertyHTTPShouldAutoredirect, kCFBooleanTrue);
+  CFReadStreamSetProperty(_responseStream, CFSTR("_kCFStreamPropertyReadTimeout"), (__bridge CFNumberRef)[NSNumber numberWithDouble:_timeoutInterval]);
+  CFReadStreamSetProperty(_responseStream, CFSTR("_kCFStreamPropertyWriteTimeout"), (__bridge CFNumberRef)[NSNumber numberWithDouble:_timeoutInterval]);
+
+  CFStreamClientContext context;
+  bzero(&context, sizeof(context));
+  context.info = (__bridge void *)self;
+  CFReadStreamSetClient(_responseStream, kCFStreamEventHasBytesAvailable | kCFStreamEventEndEncountered | kCFStreamEventErrorOccurred, response_stream_client_callback, &context);
+
+  CFReadStreamScheduleWithRunLoop(_responseStream, controller_get_runloop(), kCFRunLoopDefaultMode);
+  CFReadStreamOpen(_responseStream);
+
+  _startedTime = CFAbsoluteTimeGetCurrent();
+  _downloadSpeed = 0;
+>>>>>>> douban/master
 }
 
 - (void)cancel

@@ -4,7 +4,7 @@
  *
  *      https://github.com/douban/DOUAudioStreamer
  *
- *  Copyright 2013-2014 Douban Inc.  All rights reserved.
+ *  Copyright 2013-2016 Douban Inc.  All rights reserved.
  *
  *  Use and distribution licensed under the BSD license.  See
  *  the LICENSE file for full text.
@@ -174,7 +174,8 @@ typedef NS_ENUM(uint64_t, event_type) {
 
   NSString *previousOutputRouteType = [[previousOutputRoutes objectAtIndex:0] objectForKey:(__bridge NSString *)kAudioSession_AudioRouteKey_Type];
   if (previousOutputRouteType == nil ||
-      ![previousOutputRouteType isEqualToString:(__bridge NSString *)kAudioSessionOutputRoute_Headphones]) {
+      (![previousOutputRouteType isEqualToString:(__bridge NSString *)kAudioSessionOutputRoute_Headphones] &&
+       ![previousOutputRouteType isEqualToString:(__bridge NSString *)kAudioSessionOutputRoute_BluetoothA2DP])) {
     return;
   }
 
@@ -293,14 +294,18 @@ static void audio_route_change_listener(void *inClientData,
          [*streamer status] == DOUAudioStreamerIdle ||
          [*streamer status] == DOUAudioStreamerFinished)) {
       if ([_renderer isInterrupted]) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated"
+#if TARGET_OS_IPHONE
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wdeprecated"
         const OSStatus status = AudioSessionSetActive(TRUE);
-#pragma clang diagnostic pop
+# pragma clang diagnostic pop
         if (status == noErr) {
+#endif /* TARGET_OS_IPHONE */
           [*streamer setStatus:DOUAudioStreamerPlaying];
           [_renderer setInterrupted:NO];
+#if TARGET_OS_IPHONE
         }
+#endif /* TARGET_OS_IPHONE */
       }
       else {
         [*streamer setStatus:DOUAudioStreamerPlaying];
