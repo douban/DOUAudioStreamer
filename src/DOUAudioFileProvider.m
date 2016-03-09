@@ -293,7 +293,13 @@ static BOOL gLastProviderIsFinished = NO;
                                    ofItemAtPath:_cachedPath
                                           error:NULL];
 #endif /* TARGET_OS_IPHONE */
-  [[NSFileHandle fileHandleForWritingAtPath:_cachedPath] truncateFileAtOffset:_expectedLength];
+    @try {
+        [[NSFileHandle fileHandleForWritingAtPath:_cachedPath] truncateFileAtOffset:_expectedLength];
+    }
+    @catch (NSException *exception) {
+        _failed = YES;
+        NSLog(@"%@", exception.debugDescription);
+    }
 
   _mimeType = [[_request responseHeaders] objectForKey:@"Content-Type"];
 
