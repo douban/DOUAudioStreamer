@@ -36,23 +36,36 @@
 
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://douban.fm/j/mine/playlist?type=n&channel=1004693&from=mainsite"]];
-    NSData *data = [NSURLConnection sendSynchronousRequest:request
-                                         returningResponse:NULL
-                                                     error:NULL];
-    NSString *string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:[string dataUsingEncoding:NSUTF8StringEncoding] options:0 error:NULL];
-
-    NSMutableArray *allTracks = [NSMutableArray array];
-    for (NSDictionary *song in [dict objectForKey:@"song"]) {
-      Track *track = [[Track alloc] init];
-      [track setArtist:[song objectForKey:@"artist"]];
-      [track setTitle:[song objectForKey:@"title"]];
-      [track setAudioFileURL:[NSURL URLWithString:[song objectForKey:@"url"]]];
-      [allTracks addObject:track];
-    }
-
-    tracks = [allTracks copy];
+//    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://douban.fm/j/mine/playlist?type=n&channel=1004693&from=mainsite"]];
+//    NSData *data = [NSURLConnection sendSynchronousRequest:request
+//                                         returningResponse:NULL
+//                                                     error:NULL];
+//    NSString *string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+//    NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:[string dataUsingEncoding:NSUTF8StringEncoding] options:0 error:NULL];
+//
+//    NSMutableArray *allTracks = [NSMutableArray array];
+//    for (NSDictionary *song in [dict objectForKey:@"song"]) {
+//      Track *track = [[Track alloc] init];
+//      [track setArtist:[song objectForKey:@"artist"]];
+//      [track setTitle:[song objectForKey:@"title"]];
+//      [track setAudioFileURL:[NSURL URLWithString:[song objectForKey:@"url"]]];
+//      [allTracks addObject:track];
+//    }
+//
+//    tracks = [allTracks copy];
+      
+      
+      // 重写
+      NSMutableArray *array = [[NSMutableArray alloc] initWithCapacity:10];
+      for (int i=0; i<10; i++) {
+          Track *track = [[Track alloc] init];
+          track.artist = @"涛哥";
+          track.title = @"灵魂之歌";
+          track.audioFileURL = [NSURL URLWithString:@"http://music.163.com/song?id=95638"];
+          [array addObject:track];
+      }
+      tracks = [NSArray arrayWithArray:array];
+    
   });
 
   return tracks;
