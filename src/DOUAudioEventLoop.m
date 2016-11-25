@@ -29,6 +29,8 @@
 #include <pthread.h>
 #include <sched.h>
 
+@import AVFoundation;
+
 typedef NS_ENUM(uint64_t, event_type) {
   event_play,
   event_pause,
@@ -134,26 +136,18 @@ typedef NS_ENUM(uint64_t, event_type) {
 
 - (void)_handleAudioSessionInterruptionWithState:(UInt32)state
 {
-  if (state == kAudioSessionBeginInterruption) {
-    [_renderer setInterrupted:YES];
-    [_renderer stop];
-    [self _sendEvent:event_interruption_begin];
-  }
-  else if (state == kAudioSessionEndInterruption) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated"
-    AudioSessionInterruptionType interruptionType = kAudioSessionInterruptionType_ShouldNotResume;
-    UInt32 interruptionTypeSize = sizeof(interruptionType);
-    OSStatus status;
-    status = AudioSessionGetProperty(kAudioSessionProperty_InterruptionType,
-                                     &interruptionTypeSize,
-                                     &interruptionType);
-    NSAssert(status == noErr, @"failed to get interruption type");
-#pragma clang diagnostic pop
-
-    [self _sendEvent:event_interruption_end
-            userData:(void *)(uintptr_t)interruptionType];
-  }
+    if (state == kAudioSessionBeginInterruption) {
+        [_renderer setInterrupted:YES];
+        [_renderer stop];
+        [self _sendEvent:event_interruption_begin];
+    }
+    else if (state == kAudioSessionEndInterruption) {
+        AudioSessionInterruptionType interruptionType = kAudioSessionInterruptionType_ShouldNotResume;
+        [[AVAudioSession sharedInstance] isOtherAudioPlaying];
+        
+        [self _sendEvent:event_interruption_end
+                userData:(void *)(uintptr_t)interruptionType];
+    }
 }
 
 - (void)_handleAudioRouteChangeWithDictionary:(NSDictionary *)routeChangeDictionary
