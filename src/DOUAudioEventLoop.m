@@ -500,7 +500,7 @@ static void audio_route_change_listener(void *inClientData,
 
 - (void)_eventLoop
 {
-  DOUAudioStreamer *streamer = nil;
+  __weak DOUAudioStreamer *streamer = nil;
 
   while (1) {
     @autoreleasepool {
