@@ -246,7 +246,8 @@ static BOOL gLastProviderIsFinished = NO;
 - (void)_requestDidComplete
 {
   if ([_request isFailed] ||
-      !([_request statusCode] >= 200 && [_request statusCode] < 300)) {
+      !([_request statusCode] >= 200 && [_request statusCode] < 300)
+      || _receivedLength == 0) {
     _failed = YES;
   }
   else {
