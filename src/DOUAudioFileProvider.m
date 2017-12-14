@@ -16,7 +16,7 @@
 
 #import "DOUAudioFileProvider.h"
 #import "DOUSimpleHTTPRequest.h"
-#import "NSData+DOUMappedFile.h"
+#import "NSData+DOUAudioMappedFile.h"
 #import "DOUAudioStreamer+Options.h"
 #include <CommonCrypto/CommonDigest.h>
 #include <AudioToolbox/AudioToolbox.h>

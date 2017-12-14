@@ -14,19 +14,19 @@
  *
  */
 
-#import "NSData+DOUMappedFile.h"
+#import "NSData+DOUAudioMappedFile.h"
 #include <sys/types.h>
 #include <sys/mman.h>
 
 static NSMutableDictionary *get_size_map()
 {
   static NSMutableDictionary *map = nil;
-
+  
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     map = [[NSMutableDictionary alloc] init];
   });
-
+  
   return map;
 }
 
@@ -34,13 +34,13 @@ static void mmap_deallocate(void *ptr, void *info)
 {
   NSNumber *key = [NSNumber numberWithUnsignedLongLong:(uintptr_t)ptr];
   NSNumber *fileSize = nil;
-
+  
   NSMutableDictionary *sizeMap = get_size_map();
   @synchronized(sizeMap) {
     fileSize = [sizeMap objectForKey:key];
     [sizeMap removeObjectForKey:key];
   }
-
+  
   size_t size = (size_t)[fileSize unsignedLongLongValue];
   munmap(ptr, size);
 }
@@ -48,20 +48,20 @@ static void mmap_deallocate(void *ptr, void *info)
 static CFAllocatorRef get_mmap_deallocator()
 {
   static CFAllocatorRef deallocator = NULL;
-
+  
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     CFAllocatorContext context;
     bzero(&context, sizeof(context));
     context.deallocate = mmap_deallocate;
-
+    
     deallocator = CFAllocatorCreate(kCFAllocatorDefault, &context);
   });
-
+  
   return deallocator;
 }
 
-@implementation NSData (DOUMappedFile)
+@implementation NSData (DOUAudioMappedFile)
 
 + (instancetype)dou_dataWithMappedContentsOfFile:(NSString *)path
 {
@@ -95,33 +95,33 @@ static CFAllocatorRef get_mmap_deallocator()
   if (fileHandle == nil) {
     return nil;
   }
-
+  
   int fd = [fileHandle fileDescriptor];
   if (fd < 0) {
     return nil;
   }
-
+  
   off_t size = lseek(fd, 0, SEEK_END);
   if (size < 0) {
     return nil;
   }
-
+  
   int protection = PROT_READ;
   if (modifiable) {
     protection |= PROT_WRITE;
   }
-
+  
   void *address = mmap(NULL, (size_t)size, protection, MAP_FILE | MAP_SHARED, fd, 0);
   if (address == MAP_FAILED) {
     return nil;
   }
-
+  
   NSMutableDictionary *sizeMap = get_size_map();
   @synchronized(sizeMap) {
     [sizeMap setObject:[NSNumber numberWithUnsignedLongLong:(unsigned long long)size]
                 forKey:[NSNumber numberWithUnsignedLongLong:(uintptr_t)address]];
   }
-
+  
   return CFBridgingRelease(CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, (const UInt8 *)address, (CFIndex)size, get_mmap_deallocator()));
 }
 
@@ -129,18 +129,19 @@ static CFAllocatorRef get_mmap_deallocator()
 {
   NSNumber *key = [NSNumber numberWithUnsignedLongLong:(uintptr_t)[self bytes]];
   NSNumber *fileSize = nil;
-
+  
   NSMutableDictionary *sizeMap = get_size_map();
   @synchronized(sizeMap) {
     fileSize = [sizeMap objectForKey:key];
   }
-
+  
   if (fileSize == nil) {
     return;
   }
-
+  
   size_t size = (size_t)[fileSize unsignedLongLongValue];
   msync((void *)[self bytes], size, MS_SYNC | MS_INVALIDATE);
 }
 
 @end
+
