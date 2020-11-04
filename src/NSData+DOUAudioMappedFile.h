@@ -16,7 +16,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface NSData (DOUMappedFile)
+@interface NSData (DOUAudioMappedFile)
 
 + (instancetype)dou_dataWithMappedContentsOfFile:(NSString *)path;
 + (instancetype)dou_dataWithMappedContentsOfURL:(NSURL *)url;
@@ -27,3 +27,4 @@
 - (void)dou_synchronizeMappedFile;
 
 @end
+
