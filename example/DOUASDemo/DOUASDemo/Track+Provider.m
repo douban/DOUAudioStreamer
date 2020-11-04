@@ -36,7 +36,7 @@
 
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://douban.fm/j/mine/playlist?type=n&channel=1004693&from=mainsite"]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"https://fm.douban.com/j/v2/playlist?channel=-10&kbps=192&client=s%3Amainsite%7Cy%3A3.0&app_name=radio_website&version=100&type=s&sid=1387682&pt=7191.496&pb=128"]];
     NSData *data = [NSURLConnection sendSynchronousRequest:request
                                          returningResponse:NULL
                                                      error:NULL];
