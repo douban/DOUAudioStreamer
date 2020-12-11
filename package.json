@@ -1,0 +1,26 @@
+{
+  "name": "DOUAudioStreamer",
+  "version": "1.0.0",
+  "description": "DOUAudioStreamer is a Core Audio based streaming audio player for iOS/Mac.",
+  "main": "index.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/douban/DOUAudioStreamer.git"
+  },
+  "author": "Keith Yao <i@yaofur.com> (http://about.me/yaofur)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/douban/DOUAudioStreamer/issues"
+  },
+  "homepage": "https://github.com/douban/DOUAudioStreamer",
+  "dependencies": {
+    "events": "^1.0.2",
+    "promise": "^7.0.1"
+  }
+}
