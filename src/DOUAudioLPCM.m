@@ -15,7 +15,7 @@
  */
 
 #import "DOUAudioLPCM.h"
-#include <libkern/OSAtomic.h>
+#include <pthread.h>
 
 typedef struct data_segment {
   void *bytes;
@@ -27,7 +27,7 @@ typedef struct data_segment {
 @private
   data_segment *_segments;
   BOOL _end;
-  OSSpinLock _lock;
+  pthread_mutex_t _lock;
 }
 @end
 
@@ -39,7 +39,7 @@ typedef struct data_segment {
 {
   self = [super init];
   if (self) {
-    _lock = OS_SPINLOCK_INIT;
+    pthread_mutex_init(&_lock, NULL);
   }
 
   return self;
@@ -52,15 +52,17 @@ typedef struct data_segment {
     free(_segments);
     _segments = next;
   }
+
+  pthread_mutex_destroy(&_lock);
 }
 
 - (void)setEnd:(BOOL)end
 {
-  OSSpinLockLock(&_lock);
+  pthread_mutex_lock(&_lock);
   if (end && !_end) {
     _end = YES;
   }
-  OSSpinLockUnlock(&_lock);
+  pthread_mutex_unlock(&_lock);
 }
 
 - (BOOL)readBytes:(void **)bytes length:(NSUInteger *)length
@@ -68,10 +70,10 @@ typedef struct data_segment {
   *bytes = NULL;
   *length = 0;
 
-  OSSpinLockLock(&_lock);
+  pthread_mutex_lock(&_lock);
 
   if (_end && _segments == NULL) {
-    OSSpinLockUnlock(&_lock);
+    pthread_mutex_unlock(&_lock);
     return NO;
   }
 
@@ -85,22 +87,22 @@ typedef struct data_segment {
     _segments = next;
   }
 
-  OSSpinLockUnlock(&_lock);
+  pthread_mutex_unlock(&_lock);
 
   return YES;
 }
 
 - (void)writeBytes:(const void *)bytes length:(NSUInteger)length
 {
-  OSSpinLockLock(&_lock);
+  pthread_mutex_lock(&_lock);
 
   if (_end) {
-    OSSpinLockUnlock(&_lock);
+    pthread_mutex_unlock(&_lock);
     return;
   }
 
   if (bytes == NULL || length == 0) {
-    OSSpinLockUnlock(&_lock);
+    pthread_mutex_unlock(&_lock);
     return;
   }
 
@@ -118,7 +120,7 @@ typedef struct data_segment {
 
   *link = segment;
 
-  OSSpinLockUnlock(&_lock);
+  pthread_mutex_unlock(&_lock);
 }
 
 @end
