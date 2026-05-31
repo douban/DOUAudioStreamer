@@ -111,6 +111,51 @@ static void *kBufferingRatioKVOKey = &kBufferingRatioKVOKey;
   [self setView:view];
 }
 
+- (void)_layoutPlayerControls
+{
+  UIView *view = [self view];
+  CGRect bounds = [view bounds];
+  CGFloat width = CGRectGetWidth(bounds);
+  CGFloat height = CGRectGetHeight(bounds);
+
+  UIEdgeInsets safeAreaInsets = UIEdgeInsetsZero;
+  if (@available(iOS 11.0, *)) {
+    safeAreaInsets = [view safeAreaInsets];
+  }
+
+  CGFloat y = safeAreaInsets.top + 10.0;
+  [_titleLabel setFrame:CGRectMake(0.0, y, width, 30.0)];
+
+  y = CGRectGetMaxY([_titleLabel frame]) + 10.0;
+  [_statusLabel setFrame:CGRectMake(0.0, y, width, 30.0)];
+
+  y = CGRectGetMaxY([_statusLabel frame]) + 10.0;
+  [_miscLabel setFrame:CGRectMake(0.0, y, width, 20.0)];
+
+  y = CGRectGetMaxY([_miscLabel frame]) + 20.0;
+  [_buttonPlayPause setFrame:CGRectMake(80.0, y, 60.0, 20.0)];
+  [_buttonNext setFrame:CGRectMake(width - 80.0 - 60.0, y, 60.0, 20.0)];
+
+  y = CGRectGetMaxY([_buttonNext frame]) + 20.0;
+  [_buttonStop setFrame:CGRectMake(round((width - 60.0) / 2.0), y, 60.0, 20.0)];
+
+  y = CGRectGetMaxY([_buttonStop frame]) + 20.0;
+  [_progressSlider setFrame:CGRectMake(20.0, y, width - 20.0 * 2.0, 40.0)];
+
+  y = CGRectGetMaxY([_progressSlider frame]) + 20.0;
+  [_volumeLabel setFrame:CGRectMake(20.0, y, 80.0, 40.0)];
+  [_volumeSlider setFrame:CGRectMake(CGRectGetMaxX([_volumeLabel frame]) + 10.0, y, width - CGRectGetMaxX([_volumeLabel frame]) - 10.0 - 20.0, 40.0)];
+
+  y = CGRectGetMaxY([_volumeSlider frame]);
+  [_audioVisualizer setFrame:CGRectMake(0.0, y, width, MAX(0.0, height - y))];
+}
+
+- (void)viewDidLayoutSubviews
+{
+  [super viewDidLayoutSubviews];
+  [self _layoutPlayerControls];
+}
+
 - (void)_cancelStreamer
 {
   if (_streamer != nil) {

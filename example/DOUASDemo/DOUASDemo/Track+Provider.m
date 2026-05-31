@@ -36,23 +36,12 @@
 
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"https://fm.douban.com/j/v2/playlist?channel=-10&kbps=192&client=s%3Amainsite%7Cy%3A3.0&app_name=radio_website&version=100&type=s&sid=1387682&pt=7191.496&pb=128"]];
-    NSData *data = [NSURLConnection sendSynchronousRequest:request
-                                         returningResponse:NULL
-                                                     error:NULL];
-    NSString *string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:[string dataUsingEncoding:NSUTF8StringEncoding] options:0 error:NULL];
+    Track *track = [[Track alloc] init];
+    [track setArtist:@"Prince's Band"];
+    [track setTitle:@"All America March (1916 recording)"];
+    [track setAudioFileURL:[NSURL URLWithString:@"https://github.com/douban/DOUAudioStreamer/raw/master/example/DOUASDemo/DOUASDemo/All_America_march_1916_recording.mp3"]];
 
-    NSMutableArray *allTracks = [NSMutableArray array];
-    for (NSDictionary *song in [dict objectForKey:@"song"]) {
-      Track *track = [[Track alloc] init];
-      [track setArtist:[song objectForKey:@"artist"]];
-      [track setTitle:[song objectForKey:@"title"]];
-      [track setAudioFileURL:[NSURL URLWithString:[song objectForKey:@"url"]]];
-      [allTracks addObject:track];
-    }
-
-    tracks = [allTracks copy];
+    tracks = @[track];
   });
 
   return tracks;
