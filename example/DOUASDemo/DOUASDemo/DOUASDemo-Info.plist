@@ -29,6 +29,8 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>This app needs access to your media library to play songs from your device.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>
