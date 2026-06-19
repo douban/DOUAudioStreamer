@@ -352,11 +352,6 @@ static void audio_route_change_listener(void *inClientData,
     [[*streamer fileProvider] setEventBlock:_fileProviderEventBlock];
   }
   else if (event == event_provider_events) {
-    if (*streamer != nil &&
-        [*streamer status] == DOUAudioStreamerBuffering) {
-      [*streamer setStatus:DOUAudioStreamerPlaying];
-    }
-
     [*streamer setBufferingRatio:(double)[[*streamer fileProvider] receivedLength] / [[*streamer fileProvider] expectedLength]];
   }
   else if (event == event_finalizing) {
@@ -424,7 +419,8 @@ static void audio_route_change_listener(void *inClientData,
     return;
   }
 
-  if ([streamer status] != DOUAudioStreamerPlaying) {
+  if ([streamer status] != DOUAudioStreamerPlaying
+    && [streamer status] != DOUAudioStreamerBuffering) {
     return;
   }
 
@@ -468,6 +464,7 @@ static void audio_route_change_listener(void *inClientData,
 
   switch ([[streamer decoder] decodeOnce]) {
   case DOUAudioDecoderSucceeded:
+    [streamer setStatus:DOUAudioStreamerPlaying];
     break;
 
   case DOUAudioDecoderFailed:

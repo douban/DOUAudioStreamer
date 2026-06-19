@@ -238,4 +238,26 @@ NSString *const kDOUAudioStreamerErrorDomain = @"com.douban.audio-streamer.error
   }
 }
 
+- (void)setStatus:(DOUAudioStreamerStatus)status
+{
+  if (_status != status) {
+    [self willChangeValueForKey:@"status"];
+    _status = status;
+    [self didChangeValueForKey:@"status"];
+  }
+}
+
+- (DOUAudioStreamerStatus)status
+{
+  return _status;
+}
+
++ (BOOL)automaticallyNotifiesObserversForKey:(NSString *)key
+{
+  if ([key isEqualToString:@"status"]) {
+    return NO;
+  }
+  return YES;
+}
+
 @end
